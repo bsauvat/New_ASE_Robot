@@ -23,7 +23,7 @@ Print:
 	'print(' print=Expression ')';
 
 Deplacement:
-	Forward | Backward | StrafeLeft | StrafeRight | SpeedCommand | Rotate;
+	Forward | Backward | StrafeLeft | StrafeRight | SpeedCommand | Rotate | TurnRight | TurnLeft;
 
 ControlStructure:
 	Condition | Loop ;
@@ -100,6 +100,12 @@ StrafeRight:
 
 Rotate:
     'rotate' angle=ArithmeticExpression;
+
+TurnRight returns string:
+    'turnright';
+
+TurnLeft returns string:
+    'turnleft';
 
 SpeedCommand:
 	'setspeed' speed=ArithmeticExpression;

@@ -84,5 +84,41 @@ export class RobotAcceptWeaver {
     weaveStrafeLeft(node: InterfaceAST.StrafeLeft, accept: ValidationAcceptor): void {
         (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitStrafeLeft(node as unknown as ClassAST.StrafeLeft)};
     }
+    weaveStrafeRight(node: InterfaceAST.StrafeRight, accept: ValidationAcceptor): void {
+        (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitStrafeRight(node as unknown as ClassAST.StrafeRight)};
+    }
+    weaveRotate(node: InterfaceAST.Rotate, accept: ValidationAcceptor): void {
+        (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitRotate(node as unknown as ClassAST.Rotate)};
+    }
+    weaveSpeedCommand(node: InterfaceAST.SpeedCommand, accept: ValidationAcceptor): void {
+        (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitSpeedCommand(node as unknown as ClassAST.SpeedCommand)};
+    }
 
+    checks: ValidationChecks<RobotAstType> = {
+        Body: this.weaveBody,
+        Fonction: this.weaveFonction,
+        DeclaredParameter: this.weaveDeclaredParameter,
+        Return: this.weaveReturn,
+        Print: this.weavePrint,
+        Loop: this.weaveLoop,
+        Condition: this.weaveCondition,
+        VariableDeclaration: this.weaveVariableDeclaration,
+        UpdateVariable: this.weaveUpdateVariable,
+        CallVariable: this.weaveCallVariable,
+        CallFunction: this.weaveCallFunction,
+        Or: this.weaveOr,
+        And: this.weaveAnd,
+        Equality: this.weaveEquality,
+        Comparison: this.weaveComparison,
+        PlusMinus: this.weavePlusMinus,
+        MultDiv: this.weaveMultDiv,
+        Atomic: this.weaveAtomic,
+        Forward: this.weaveForward,
+        Backward: this.weaveBackward,
+        StrafeLeft: this.weaveStrafeLeft,
+        StrafeRight: this.weaveStrafeRight,
+        Rotate: this.weaveRotate,
+        SpeedCommand: this.weaveSpeedCommand,
+        
+    };
 }
