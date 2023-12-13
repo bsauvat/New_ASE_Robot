@@ -11,7 +11,7 @@ Body:
  '{' (statements+=Statement)* '}';
 
 DeclaredParameter:
-    paramName=ID;
+    vartype=("int" | "string" | "bool") paramName=ID;
 
 Statement:
 	ControlStructure | ((Deplacement | VariableDeclaration | UpdateVariable | CallFunction | Print | Return) ';');
@@ -35,7 +35,7 @@ Condition:
 	'if' ifCondition=Expression ifBody=Body ('else' 'if' elseifCondition+=Expression elseifBody+=Body)* ('else' elseBody=Body)? ;
 
 VariableDeclaration:
-	'var' name=ID '=' varValue=Expression;
+	vartype=("int" | "string" | "bool") name=ID '=' varValue=Expression;
 
 UpdateVariable:
 	varName=[VariableDeclaration:ID] '=' newValue=Expression;

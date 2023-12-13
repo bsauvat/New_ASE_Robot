@@ -139,12 +139,14 @@ export class CallVariable implements ASTInterfaces.CallVariable {
 export class VariableDeclaration implements ASTInterfaces.VariableDeclaration {
     $container: ASTInterfaces.Body;
     $type: 'VariableDeclaration';
+    vartype: ("int" | "string" | "bool");
     name: string;
     varValue: ASTInterfaces.Expression;
 
-    constructor(name: string, varValue: ASTInterfaces.Expression, container: ASTInterfaces.Body) {
+    constructor(name: string, varValue: ASTInterfaces.Expression, container: ASTInterfaces.Body, vartype: ("int" | "string" | "bool")) {
         this.name = name;
         this.varValue = varValue;
+        this.vartype = vartype;
         this.$container = container;
         this.$type = "VariableDeclaration";
     }
@@ -616,10 +618,12 @@ export class Robot implements ASTInterfaces.Robot {
 export class DeclaredParameter implements ASTInterfaces.DeclaredParameter {
     $container: ASTInterfaces.Fonction | ASTInterfaces.Term;
     $type: 'DeclaredParameter';
+    vartype: ("int" | "string" | "bool");
     paramName: string;
 
-    constructor(paramName: string, container: ASTInterfaces.Fonction | ASTInterfaces.Term) {
+    constructor(paramName: string, container: (ASTInterfaces.Fonction | ASTInterfaces.Term),vartype: ("int" | "string" | "bool")) {
         this.paramName = paramName;
+        this.vartype = vartype;
         this.$type = 'DeclaredParameter';
         this.$container = container;
     }
