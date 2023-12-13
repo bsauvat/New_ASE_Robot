@@ -32,7 +32,7 @@ Loop:
 	'while' loop=Expression loopBody=Body;
 
 Condition:
-	'if' ifCondition=Expression ifBody=Body ('else' 'if' elseifCondition+=Expression esleifBody+=Body)* ('else' elseBody=Body)? ;
+	'if' ifCondition=Expression ifBody=Body ('else' 'if' elseifCondition+=Expression elseifBody+=Body)* ('else' elseBody=Body)? ;
 
 VariableDeclaration:
 	'var' name=ID '=' varValue=Expression;
@@ -55,7 +55,7 @@ Unit returns string:
 Expression : Or;
 
 Or infers Or:
-	left=And ( '||' right=And )*;
+	left=And ( '||' right+=And )*;
 
 And infers And:
 	left=Equality ( '&&' right+=Equality )*;
