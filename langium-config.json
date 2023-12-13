@@ -1,0 +1,15 @@
+{
+    "projectName": "Robot",
+    "languages": [{
+        "id": "robot",
+        "grammar": "src/language/robot.langium",
+        "fileExtensions": [".robot"],
+        "textMate": {
+            "out": "syntaxes/robot.tmLanguage.json"
+        },
+        "monarch": {
+            "out": "syntaxes/robot.monarch.ts"
+        }
+    }],
+    "out": "src/language/generated"
+}
