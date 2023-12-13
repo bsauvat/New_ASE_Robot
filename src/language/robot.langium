@@ -69,7 +69,7 @@ Comparison infers Comparison:
 PlusMinus infers PlusMinus:
 	left=MultDiv (op+=( '+' | '-' ) right+=MultDiv )*;
 
-MultDiv infers Multdiv:
+MultDiv infers MultDiv:
 	left=Term ( op+=( '*' | '/' ) right+=Term)*;
 
 Term infers Term:

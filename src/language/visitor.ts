@@ -1,7 +1,7 @@
 import * as ASTInterfaces from './generated/ast.js';
 import { AstNode, Reference } from 'langium';
 
-export interface RobotMLVisitor {
+export interface RobotVisitor {
     
     visitBody(node: Body): any;
 
@@ -41,7 +41,7 @@ export interface RobotMLVisitor {
 
     visitPlusMinus(node: PlusMinus): any;
 
-    visitMultdiv(node: Multdiv): any;
+    visitMultDiv(node: MultDiv): any;
 
     //visitTerm(node: Term): any;
 
@@ -87,7 +87,7 @@ export class Body implements ASTInterfaces.Body {
         this.$type = "Body";
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitBody(this);
     }
 }
@@ -109,7 +109,7 @@ export class CallFunction implements ASTInterfaces.CallFunction {
         this.args = args;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitCallFunction(this);
     }
 }
@@ -131,7 +131,7 @@ export class CallVariable implements ASTInterfaces.CallVariable {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitCallVariable(this);
     }
 }
@@ -149,7 +149,7 @@ export class VariableDeclaration implements ASTInterfaces.VariableDeclaration {
         this.$type = "VariableDeclaration";
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitVariableDeclaration(this);
     }
 }
@@ -167,7 +167,7 @@ export class UpdateVariable implements ASTInterfaces.UpdateVariable {
         this.$type = "UpdateVariable";
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitUpdateVariable(this);
     }
 }
@@ -188,7 +188,7 @@ export class Or implements ASTInterfaces.Or {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitOr(this);
     }
 }
@@ -207,7 +207,7 @@ export class And implements ASTInterfaces.And {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitAnd(this);
     }
 }
@@ -227,7 +227,7 @@ export class Equality implements ASTInterfaces.Equality {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitEquality(this);
     }
 }
@@ -247,7 +247,7 @@ export class Comparison implements ASTInterfaces.Comparison {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitComparison(this);
     }
 }
@@ -255,11 +255,11 @@ export class Comparison implements ASTInterfaces.Comparison {
 export class PlusMinus implements ASTInterfaces.PlusMinus {
     $container: ASTInterfaces.Backward | ASTInterfaces.Comparison | ASTInterfaces.Forward | ASTInterfaces.Rotate | ASTInterfaces.SpeedCommand | ASTInterfaces.StrafeLeft | ASTInterfaces.StrafeRight;
     $type: 'PlusMinus';
-    left: ASTInterfaces.Multdiv;
+    left: ASTInterfaces.MultDiv;
     op: ("+"|"-")[];
-    right: ASTInterfaces.Multdiv[];
+    right: ASTInterfaces.MultDiv[];
 
-    constructor(left: ASTInterfaces.Multdiv, op: ("+"|"-")[], right: ASTInterfaces.Multdiv[],
+    constructor(left: ASTInterfaces.MultDiv, op: ("+"|"-")[], right: ASTInterfaces.MultDiv[],
                 container: Backward | ASTInterfaces.Comparison | ASTInterfaces.Forward | ASTInterfaces.Rotate | ASTInterfaces.SpeedCommand | ASTInterfaces.StrafeLeft | ASTInterfaces.StrafeRight
     ) {
         this.left = left;
@@ -269,14 +269,14 @@ export class PlusMinus implements ASTInterfaces.PlusMinus {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitPlusMinus(this);
     }
 }
 
-export class Multdiv implements ASTInterfaces.Multdiv {
+export class MultDiv implements ASTInterfaces.MultDiv {
     $container: ASTInterfaces.PlusMinus;
-    $type: 'Multdiv';
+    $type: 'MultDiv';
     left: ASTInterfaces.Term;
     op: ("*" | "/")[];
     right: ASTInterfaces.Term[];
@@ -285,24 +285,24 @@ export class Multdiv implements ASTInterfaces.Multdiv {
         this.left = left;
         this.op = op;
         this.right = right;
-        this.$type = 'Multdiv';
+        this.$type = 'MultDiv';
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
-        return visitor.visitMultdiv(this);
+    accept(visitor: RobotVisitor): any {
+        return visitor.visitMultDiv(this);
     }
 }
 
 /*export class Term implements ASTInterfaces.Term {
-    $container: ASTInterfaces.Term | ASTInterfaces.Multdiv;
+    $container: ASTInterfaces.Term | ASTInterfaces.MultDiv;
     $type: 'Term';
     expression?: ASTInterfaces.Expression;
     param?: ASTInterfaces.DeclaredParameter;
     atom?: ASTInterfaces.Atomic;
 
     constructor(
-        container: (ASTInterfaces.Term | ASTInterfaces.Multdiv),
+        container: (ASTInterfaces.Term | ASTInterfaces.MultDiv),
         expression?: ASTInterfaces.Expression,
         param?: ASTInterfaces.DeclaredParameter,
         atom?: ASTInterfaces.Atomic
@@ -314,7 +314,7 @@ export class Multdiv implements ASTInterfaces.Multdiv {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitTerm(this);
     }
 }*/
@@ -328,7 +328,7 @@ export class Atomic implements ASTInterfaces.Atomic {
         this.$type = 'Atomic';
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitAtomic(this);
     }
 }
@@ -346,7 +346,7 @@ export class Forward implements ASTInterfaces.Forward {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitForward(this);
     }
 }
@@ -364,7 +364,7 @@ export class Backward implements ASTInterfaces.Backward {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitBackward(this);
     }
 }
@@ -382,7 +382,7 @@ export class StrafeLeft implements ASTInterfaces.StrafeLeft {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitStrafeLeft(this);
     }
 }
@@ -400,7 +400,7 @@ export class StrafeRight implements ASTInterfaces.StrafeRight {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitStrafeRight(this);
     }
 }
@@ -416,7 +416,7 @@ export class Rotate implements ASTInterfaces.Rotate {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitRotate(this);
     }
 }
@@ -432,7 +432,7 @@ export class SpeedCommand implements ASTInterfaces.SpeedCommand {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitSpeedCommand(this);
     }
 }
@@ -450,7 +450,7 @@ export class Loop implements ASTInterfaces.Loop {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitLoop(this);
     }
 }
@@ -481,7 +481,7 @@ export class Condition implements ASTInterfaces.Condition {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitCondition(this);
     }
 }
@@ -497,7 +497,7 @@ export class Print implements ASTInterfaces.Print {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitPrint(this);
     }
 }
@@ -513,7 +513,7 @@ export class Return implements ASTInterfaces.Return {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitReturn(this);
     }
 }
@@ -527,7 +527,7 @@ export class BOOL_const implements ASTInterfaces.BOOL_const {
         this.$type = 'BOOL_const';
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitBOOL_const(this);
     }
 }
@@ -541,7 +541,7 @@ export class GetSpeed implements ASTInterfaces.GetSpeed {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitGetSpeed(this);
     }
 }
@@ -555,7 +555,7 @@ export class GetDistance implements ASTInterfaces.GetDistance {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitGetDistance(this);
     }
 }
@@ -569,7 +569,7 @@ export class GetTimestamp implements ASTInterfaces.GetTimestamp {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitGetTimestamp(this);
     }
 }
@@ -594,7 +594,7 @@ export class Fonction implements ASTInterfaces.Fonction {
         this.$container = container
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitFonction(this);
     }
 }
@@ -608,7 +608,7 @@ export class Robot implements ASTInterfaces.Robot {
         this.$type = 'Robot';
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitRobot(this);
     }
 }
@@ -624,7 +624,7 @@ export class DeclaredParameter implements ASTInterfaces.DeclaredParameter {
         this.$container = container;
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitDeclaredParameter(this);
     }
 }
@@ -638,7 +638,7 @@ export class INT_const implements ASTInterfaces.INT_const {
         this.$type = 'INT_const';
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitINT_const(this);
     }
 }
@@ -652,7 +652,7 @@ export class INT_neg_const implements ASTInterfaces.INT_neg_const {
         this.$type = 'INT_neg_const';
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitINT_neg_const(this);
     }
 }
@@ -666,12 +666,12 @@ export class STRING_const implements ASTInterfaces.STRING_const {
         this.$type = 'STRING_const';
     }
 
-    accept(visitor: RobotMLVisitor): any {
+    accept(visitor: RobotVisitor): any {
         return visitor.visitSTRING_const(this);
     }
 }
 
-export function acceptNode(node: AstNode, visitor: RobotMLVisitor): any {
+export function acceptNode(node: AstNode, visitor: RobotVisitor): any {
     switch (node.$type) {
         case 'Body':
             return (node as Body).accept(visitor);
@@ -719,8 +719,8 @@ export function acceptNode(node: AstNode, visitor: RobotMLVisitor): any {
             return (node as Comparison).accept(visitor);
         case 'PlusMinus':
             return (node as PlusMinus).accept(visitor);
-        case 'Multdiv':
-            return (node as Multdiv).accept(visitor);
+        case 'MultDiv':
+            return (node as MultDiv).accept(visitor);
         //case 'Term':
             //return (node as Term).accept(visitor);
         case 'Atomic':
