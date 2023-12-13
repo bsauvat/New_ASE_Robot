@@ -11,7 +11,7 @@ Body:
  '{' (statements+=Statement)* '}';
 
 DeclaredParameter:
-    vartype=("int" | "string" | "bool") paramName=ID;
+    vartype=("int" | "string" | "bool") name=ID;
 
 Statement:
 	ControlStructure | ((Deplacement | VariableDeclaration | UpdateVariable | CallFunction | Print | Return) ';');
