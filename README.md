@@ -21,7 +21,7 @@ npm install -g yo@4.3.1 generator-langium@2.0.0
 ```
 - clone this repository
 ```bash 
-git clone https://github.com/bsauvat/ASE_Robot.git
+git clone https://github.com/bsauvat/New_ASE_Robot.git
 ```
 - place yourself in the robot directory
 ```bash 
