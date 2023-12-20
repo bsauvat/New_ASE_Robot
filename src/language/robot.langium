@@ -10,8 +10,6 @@ Fonction:
 Body:
  '{' (statements+=Statement)* '}';
 
-DeclaredParameter:
-    vartype=("int" | "string" | "bool") name=ID;
 
 Statement:
 	ControlStructure | ((Deplacement | VariableDeclaration | UpdateVariable | CallFunction | Print | Return) ';');
@@ -34,6 +32,9 @@ Loop:
 Condition:
 	'if' ifCondition=Expression ifBody=Body ('else' 'if' elseifCondition+=Expression elseifBody+=Body)* ('else' elseBody=Body)? ;
 
+DeclaredParameter:
+    vartype=("int" | "string" | "bool") name=ID;
+
 VariableDeclaration:
 	vartype=("int" | "string" | "bool") name=ID '=' varValue=Expression;
 
@@ -41,7 +42,9 @@ UpdateVariable:
 	varName=[VariableDeclaration:ID] '=' newValue=Expression;
 
 CallVariable:
-    varName=[VariableDeclaration:ID] | param=[DeclaredParameter:ID];
+    varName=[AbstractType:ID];
+
+type AbstractType= DeclaredParameter | VariableDeclaration;
 
 CallFunction:
 	functionName=[Fonction:ID] '(' (args+=Expression (',' args+=Expression)*)? ')';

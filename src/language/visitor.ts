@@ -117,15 +117,15 @@ export class CallFunction implements ASTInterfaces.CallFunction {
 export class CallVariable implements ASTInterfaces.CallVariable {
     $container: ASTInterfaces.Atomic;
     $type: 'CallVariable';
-    name: Reference<VariableDeclaration> | Reference<DeclaredParameter>;
+    varName: Reference<VariableDeclaration> | Reference<DeclaredParameter>;
     varvalue: Reference<VariableDeclaration> | Reference<DeclaredParameter>;
 
     constructor(
-        name: Reference<VariableDeclaration> | Reference<DeclaredParameter>, 
+        varName: Reference<VariableDeclaration> | Reference<DeclaredParameter>, 
         varvalue:  Reference<VariableDeclaration> | Reference<DeclaredParameter>, 
         container: ASTInterfaces.Atomic
     ) {
-        this.name = name;
+        this.varName = varName;
         this.varvalue = varvalue;
         this.$type = "CallVariable";
         this.$container = container;
@@ -619,10 +619,10 @@ export class DeclaredParameter implements ASTInterfaces.DeclaredParameter {
     $container: ASTInterfaces.Fonction | ASTInterfaces.Term;
     $type: 'DeclaredParameter';
     vartype: ("int" | "string" | "bool");
-    paramName: string;
+    name: string;
 
-    constructor(paramName: string, container: (ASTInterfaces.Fonction | ASTInterfaces.Term),vartype: ("int" | "string" | "bool")) {
-        this.paramName = paramName;
+    constructor(name: string, container: (ASTInterfaces.Fonction | ASTInterfaces.Term),vartype: ("int" | "string" | "bool")) {
+        this.name = name;
         this.vartype = vartype;
         this.$type = 'DeclaredParameter';
         this.$container = container;
