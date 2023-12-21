@@ -17,11 +17,9 @@ export interface RobotVisitor {
 
     visitLoop(node: Loop): any;
 
-    visitRobot(node: Robot): any;
+    visitProgRobot(node: ProgRobot): any;
 
     visitSpeedCommand(node: SpeedCommand): any;
-
-    visitRotate(node: Rotate): any;
 
     visitCallVariable(node: CallVariable): any;
 
@@ -70,6 +68,10 @@ export interface RobotVisitor {
     visitStrafeLeft(node: StrafeLeft): any;
 
     visitStrafeRight(node: StrafeRight): any;
+
+    visitTurnLeft(node: TurnLeft): any;
+
+    visitTurnRight(node: TurnRight): any;
 
 }
 
@@ -255,14 +257,14 @@ export class Comparison implements ASTInterfaces.Comparison {
 }
 
 export class PlusMinus implements ASTInterfaces.PlusMinus {
-    $container: ASTInterfaces.Backward | ASTInterfaces.Comparison | ASTInterfaces.Forward | ASTInterfaces.Rotate | ASTInterfaces.SpeedCommand | ASTInterfaces.StrafeLeft | ASTInterfaces.StrafeRight;
+    $container: ASTInterfaces.Backward | ASTInterfaces.Comparison | ASTInterfaces.Forward | ASTInterfaces.SpeedCommand | ASTInterfaces.StrafeLeft | ASTInterfaces.StrafeRight;
     $type: 'PlusMinus';
     left: ASTInterfaces.MultDiv;
     op: ("+"|"-")[];
     right: ASTInterfaces.MultDiv[];
 
     constructor(left: ASTInterfaces.MultDiv, op: ("+"|"-")[], right: ASTInterfaces.MultDiv[],
-                container: Backward | ASTInterfaces.Comparison | ASTInterfaces.Forward | ASTInterfaces.Rotate | ASTInterfaces.SpeedCommand | ASTInterfaces.StrafeLeft | ASTInterfaces.StrafeRight
+                container: Backward | ASTInterfaces.Comparison | ASTInterfaces.Forward  | ASTInterfaces.SpeedCommand | ASTInterfaces.StrafeLeft | ASTInterfaces.StrafeRight
     ) {
         this.left = left;
         this.op = op;
@@ -296,30 +298,6 @@ export class MultDiv implements ASTInterfaces.MultDiv {
     }
 }
 
-/*export class Term implements ASTInterfaces.Term {
-    $container: ASTInterfaces.Term | ASTInterfaces.MultDiv;
-    $type: 'Term';
-    expression?: ASTInterfaces.Expression;
-    param?: ASTInterfaces.DeclaredParameter;
-    atom?: ASTInterfaces.Atomic;
-
-    constructor(
-        container: (ASTInterfaces.Term | ASTInterfaces.MultDiv),
-        expression?: ASTInterfaces.Expression,
-        param?: ASTInterfaces.DeclaredParameter,
-        atom?: ASTInterfaces.Atomic
-    ) {
-        this.expression = expression;
-        this.param = param;
-        this.atom = atom;
-        this.$type = 'Term';
-        this.$container = container;
-    }
-
-    accept(visitor: RobotVisitor): any {
-        return visitor.visitTerm(this);
-    }
-}*/
 
 export class Atomic implements ASTInterfaces.Atomic {
     $type: 'Atomic';
@@ -407,19 +385,35 @@ export class StrafeRight implements ASTInterfaces.StrafeRight {
     }
 }
 
-export class Rotate implements ASTInterfaces.Rotate {
+export class TurnRight implements ASTInterfaces.TurnRight {
     $container: ASTInterfaces.Body;
-    $type: 'Rotate';
+    $type: 'TurnRight';
     angle: ASTInterfaces.ArithmeticExpression;
 
-    constructor(angle: ASTInterfaces.ArithmeticExpression, container: ASTInterfaces.Body) {
+    constructor(container: ASTInterfaces.Body, angle:ASTInterfaces.ArithmeticExpression) {
         this.angle = angle;
-        this.$type = 'Rotate';
+        this.$type = 'TurnRight';
         this.$container = container;
     }
 
     accept(visitor: RobotVisitor): any {
-        return visitor.visitRotate(this);
+        return visitor.visitTurnRight(this);
+    }
+}
+
+export class TurnLeft implements ASTInterfaces.TurnLeft {
+    $container: ASTInterfaces.Body;
+    $type: 'TurnLeft';
+    angle: ASTInterfaces.ArithmeticExpression;
+
+    constructor(container: ASTInterfaces.Body,angle: ASTInterfaces.ArithmeticExpression) {
+        this.angle = angle;
+        this.$type = 'TurnLeft';
+        this.$container = container;
+    }
+
+    accept(visitor: RobotVisitor): any {
+        return visitor.visitTurnLeft(this);
     }
 }
 
@@ -577,7 +571,7 @@ export class GetTimestamp implements ASTInterfaces.GetTimestamp {
 }
 
 export class Fonction implements ASTInterfaces.Fonction {
-    $container: ASTInterfaces.Robot;
+    $container: ASTInterfaces.ProgRobot;
     $type: 'Fonction';
     name: string;
     args: ASTInterfaces.DeclaredParameter[];
@@ -587,7 +581,7 @@ export class Fonction implements ASTInterfaces.Fonction {
         name: string,
         args: ASTInterfaces.DeclaredParameter[],
         functionBody: ASTInterfaces.Body,
-        container: ASTInterfaces.Robot
+        container: ASTInterfaces.ProgRobot
     ) {
         this.name = name;
         this.args = args;
@@ -601,17 +595,17 @@ export class Fonction implements ASTInterfaces.Fonction {
     }
 }
 
-export class Robot implements ASTInterfaces.Robot {
-    $type: 'Robot';
+export class ProgRobot implements ASTInterfaces.ProgRobot {
+    $type: 'ProgRobot';
     functions: ASTInterfaces.Fonction[];
 
     constructor(functions: ASTInterfaces.Fonction[]) {
         this.functions = functions;
-        this.$type = 'Robot';
+        this.$type = 'ProgRobot';
     }
 
     accept(visitor: RobotVisitor): any {
-        return visitor.visitRobot(this);
+        return visitor.visitProgRobot(this);
     }
 }
 
@@ -701,6 +695,10 @@ export function acceptNode(node: AstNode, visitor: RobotVisitor): any {
             return (node as StrafeLeft).accept(visitor);
         case 'StrafeRight':
             return (node as StrafeRight).accept(visitor);
+        case 'TurnRight':
+            return(node as TurnRight).accept(visitor);
+        case 'TurnLeft':
+            return(node as TurnLeft).accept(visitor);
         case 'SpeedCommand':
             return (node as SpeedCommand).accept(visitor);
         case 'Comparison':
@@ -725,8 +723,6 @@ export function acceptNode(node: AstNode, visitor: RobotVisitor): any {
             return (node as PlusMinus).accept(visitor);
         case 'MultDiv':
             return (node as MultDiv).accept(visitor);
-        //case 'Term':
-            //return (node as Term).accept(visitor);
         case 'Atomic':
             return (node as Atomic).accept(visitor);
         default:

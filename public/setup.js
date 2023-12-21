@@ -12,26 +12,39 @@ editorConfig.setMainLanguageId('robot');       // WARNING Dependent of your proj
 
 editorConfig.setMonarchTokensProvider(monarchSyntax);
 
-let code = `let void entry () {
-    var number count = 0
-    loop count < 5
-    {	
-        setSpeed(500 * (count + 1))
-        count = count + 1
-        square(count)
-    }
-}
+let code = `def main() {
+    square();
+    round_trip();
+  }
+  
+  def move(int distance, int speed) {
+    setspeed speed;
+    forward distance m;
+  }
 
-let void square(number factor){
-    Forward 500 * factor
-    Clock 90
-    Forward 500 * factor
-    Clock 90
-    Forward 500 * factor
-    Clock 90
-    Forward 500 * factor
-    Clock 90
-}`
+  def square(){
+    int cpt = 1;
+    while (cpt< 5){
+        move (20,cpt*5);
+        turnright(90);
+        cpt = cpt+1;
+    }
+  }
+
+  def control_speed(int speed) {
+    if speed > 0 {
+      setspeed speed;
+    } else {
+      setspeed 0;
+    }
+  }
+  
+  def round_trip() {
+    control_speed(50);
+    forward 20 cm;
+    control_speed(-50);
+    forward 20 cm;
+  }`
 
 editorConfig.setMainCode(code);
 
@@ -55,12 +68,16 @@ const typecheck = (async () => {
 
 const parseAndValidate = (async () => {
     console.info('validating current code...');
-    // To implement
+    
+    const codeToParse = wrapper.getEditor().getValue();
+    sendParseAndValidate(codeToParse);
 });
 
 const execute = (async () => {
     console.info('running current code...');
-    // To implement
+    
+    const code = wrapper.getEditor().getValue();
+    sendCode(code);
 });
 
 const setupSimulator = (scene) => {
@@ -131,3 +148,12 @@ client.setWorker(lsWorker);
 
 // keep a reference to a promise for when the editor is finished starting, we'll use this to setup the canvas on load
 const startingPromise = client.startEditor(document.getElementById("monaco-editor-root"));
+
+
+// rbot is running in the web!
+
+
+
+
+  
+  

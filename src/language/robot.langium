@@ -1,6 +1,6 @@
 grammar Robot
 
-entry Robot:
+entry ProgRobot:
 	functions+=Fonction*;
 
 Fonction:
@@ -21,7 +21,7 @@ Print:
 	'print(' print=Expression ')';
 
 Deplacement:
-	Forward | Backward | StrafeLeft | StrafeRight | SpeedCommand | Rotate | TurnRight | TurnLeft;
+	Forward | Backward | StrafeLeft | StrafeRight | SpeedCommand | TurnRight | TurnLeft;
 
 ControlStructure:
 	Condition | Loop ;
@@ -101,14 +101,11 @@ StrafeLeft:
 StrafeRight:
     'straferight' distance=ArithmeticExpression unit=Unit;
 
-Rotate:
-    'rotate' angle=ArithmeticExpression;
+TurnRight:
+    'turnright'angle=ArithmeticExpression;
 
-TurnRight returns string:
-    'turnright';
-
-TurnLeft returns string:
-    'turnleft';
+TurnLeft:
+    'turnleft'angle=ArithmeticExpression;
 
 SpeedCommand:
 	'setspeed' speed=ArithmeticExpression;

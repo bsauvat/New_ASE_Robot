@@ -1,0 +1,94 @@
+import { Vector, Ray } from './utils.js';
+
+export interface Entities {
+    type:string;
+    pos:Vector;
+    size:Vector;
+
+    intersect(ray: Ray) : Vector[];
+}
+
+export class Robot implements Entities{
+    
+    type:string = "Robot";
+    pos:Vector;
+    size:Vector;
+    rad:number; // stored in radian
+    speed:number
+  
+    constructor(pos:Vector, size:Vector, angle:number, speed:number) {
+        this.pos = pos;
+        this.size = size;
+        this.rad = angle * Math.PI / 180;
+        this.speed = speed;
+    }
+  
+    intersect(ray :Ray) : Vector[] {
+        return [] as Vector[];
+    }
+
+    turn(angle:number) : void {
+        this.rad += angle;
+    }
+
+    move(dist:number) : void {
+        this.pos = this.pos.plus(Vector.fromAngle(this.rad, dist));
+    }
+
+    strafe(dist:number) : void {
+        this.pos = this.pos.plus(Vector.fromAngle(this.rad + Math.PI / 2, dist));
+    }
+
+    getRay(){
+        return new Ray(this.pos, Vector.fromAngle(this.rad, 10000).scale(-1));
+    }
+}
+
+export class Timestamp extends Robot{
+    time:number;
+
+    constructor(time:number, robot:Robot){
+        super(robot.pos.scale(1), robot.size.scale(1), robot.rad, robot.speed);
+        this.rad = robot.rad;
+        this.time = time;
+    }
+}
+
+export class Body implements Entities{
+    type:string = "Body";
+    pos:Vector;
+    size:Vector;
+  
+    constructor(pos:Vector, size:Vector) {
+        this.pos = pos;
+        this.size = size;
+    }  
+  
+    intersect(ray :Ray) : Vector[] {
+
+        let getPOI = ray.getPoiFinder()  
+        let pois:(Vector|undefined)[] = new Array(4);
+        pois[0] = getPOI(this.pos,                            this.pos.plus(this.size.projX()));
+        pois[1] = getPOI(this.pos,                            this.pos.plus(this.size.projY()));
+        pois[2] = getPOI(this.pos.plus(this.size.projX()),    this.pos.plus(this.size));
+        pois[3] = getPOI(this.pos.plus(this.size.projY()),    this.pos.plus(this.size));
+
+        return pois.filter(x => x !== undefined) as Vector[];
+    }
+}
+
+export class Wall implements Entities{
+    type:string = "Wall";
+    pos:Vector;
+    size:Vector;
+
+    constructor(p1:Vector, p2:Vector) {
+        this.pos = p1;
+        this.size = p2;
+    }
+      
+    intersect(ray:Ray) : Vector[] {
+        const poi = ray.getPoiFinder()(this.pos, this.size);
+        return poi ? ([poi] as Vector[]) : ([] as Vector[]);
+    }
+}

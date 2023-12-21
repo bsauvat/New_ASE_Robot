@@ -87,8 +87,11 @@ export class RobotAcceptWeaver {
     weaveStrafeRight(node: InterfaceAST.StrafeRight, accept: ValidationAcceptor): void {
         (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitStrafeRight(node as unknown as ClassAST.StrafeRight)};
     }
-    weaveRotate(node: InterfaceAST.Rotate, accept: ValidationAcceptor): void {
-        (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitRotate(node as unknown as ClassAST.Rotate)};
+    weaveTurnRight(node: InterfaceAST.TurnRight, accept: ValidationAcceptor): void {
+        (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitTurnRight(node as unknown as ClassAST.TurnRight)};
+    }
+    weaveTurnLeft(node: InterfaceAST.TurnLeft, accept: ValidationAcceptor): void {
+        (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitTurnLeft(node as unknown as ClassAST.TurnLeft)};
     }
     weaveSpeedCommand(node: InterfaceAST.SpeedCommand, accept: ValidationAcceptor): void {
         (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitSpeedCommand(node as unknown as ClassAST.SpeedCommand)};
@@ -117,7 +120,8 @@ export class RobotAcceptWeaver {
         Backward: this.weaveBackward,
         StrafeLeft: this.weaveStrafeLeft,
         StrafeRight: this.weaveStrafeRight,
-        Rotate: this.weaveRotate,
+        TurnLeft: this.weaveTurnLeft,
+        TurnRight: this.weaveTurnRight,
         SpeedCommand: this.weaveSpeedCommand,
         
     };
