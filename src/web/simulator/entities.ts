@@ -1,4 +1,5 @@
 import { Vector, Ray } from './utils.js';
+//import { Scene } from "./scene.js"
 
 export interface Entities {
     type:string;
@@ -12,15 +13,17 @@ export class Robot implements Entities{
     
     type:string = "Robot";
     pos:Vector;
+    // scene:Scene;
     size:Vector;
     rad:number; // stored in radian
     speed:number
   
-    constructor(pos:Vector, size:Vector, angle:number, speed:number) {
+    constructor(pos:Vector, size:Vector, angle:number, speed:number, /*scene:Scene*/) {
         this.pos = pos;
         this.size = size;
         this.rad = angle * Math.PI / 180;
         this.speed = speed;
+        // this.scene=scene;
     }
   
     intersect(ray :Ray) : Vector[] {
@@ -48,14 +51,14 @@ export class Timestamp extends Robot{
     time:number;
 
     constructor(time:number, robot:Robot){
-        super(robot.pos.scale(1), robot.size.scale(1), robot.rad, robot.speed);
+        super(robot.pos.scale(1), robot.size.scale(1), robot.rad, robot.speed, /*robot.scene*/);
         this.rad = robot.rad;
         this.time = time;
     }
 }
 
-export class Body implements Entities{
-    type:string = "Body";
+export class Block implements Entities{
+    type:string = "Block";
     pos:Vector;
     size:Vector;
   

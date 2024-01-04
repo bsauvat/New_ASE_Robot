@@ -598,7 +598,7 @@ export class Fonction implements ASTInterfaces.Fonction {
 export class ProgRobot implements ASTInterfaces.ProgRobot {
     $type: 'ProgRobot';
     functions: ASTInterfaces.Fonction[];
-
+    
     constructor(functions: ASTInterfaces.Fonction[]) {
         this.functions = functions;
         this.$type = 'ProgRobot';
@@ -717,8 +717,6 @@ export function acceptNode(node: AstNode, visitor: RobotVisitor): any {
             return (node as And).accept(visitor);
         case 'Equality':
             return (node as Equality).accept(visitor);
-        case 'Comparison':
-            return (node as Comparison).accept(visitor);
         case 'PlusMinus':
             return (node as PlusMinus).accept(visitor);
         case 'MultDiv':

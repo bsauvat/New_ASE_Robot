@@ -1,14 +1,13 @@
-import { MonacoEditorLanguageClientWrapper } from './monaco-editor-wrapper/index.js';
+import { MonacoEditorLanguageClientWrapper, vscode } from './monaco-editor-wrapper/index.js';
 import { buildWorkerDefinition } from "./monaco-editor-workers/index.js";
 import monarchSyntax from "./syntaxes/robot.monarch.js";
-import { sendCode, sendParseAndValidate } from './simulator/websocket.js';
+import { sendParseAndValidate } from './simulator/websocket.js';
 
 buildWorkerDefinition('./monaco-editor-workers/workers', new URL('', window.location.href).href, false);
 
 MonacoEditorLanguageClientWrapper.addMonacoStyles('monaco-editor-styles');
 
 const wrapper = new MonacoEditorLanguageClientWrapper();
-//const client = new MonacoEditorLanguageClientWrapper();
 
 const editorConfig = wrapper.getEditorConfig();
 editorConfig.setMainLanguageId('robot');       // WARNING Dependent of your project//
@@ -57,14 +56,12 @@ editorConfig.useWebSocket = false;
 const typecheck = (async () => {
     console.info('typechecking current code...');
 
-    // To implement (Bonus)
-    
     if(errors.length > 0){
         const modal = document.getElementById("errorModal");
-        modal.style.display = "Body";
+        modal.style.display = "block";
     } else {
         const modal = document.getElementById("validModal");
-        modal.style.display = "Body";
+        modal.style.display = "block";
     }
 });
 
@@ -76,14 +73,22 @@ const parseAndValidate = (async () => {
 
 const execute = (async () => {
     console.info('running current code...');
-    
-    const code = wrapper.getEditor().getValue();
-    sendCode(code);
+    const codeToExecute = wrapper.getEditor().getValue();
+    //sendCode(code);
+
+    const simulatorDiv = document.querySelector('.simulator');
+    // Execute custom LSP command, and receive the response
+    const scene = await vscode.commands.executeCommand('parseAndGenerate', [codeToExecute, simulatorDiv.clientWidth, simulatorDiv.clientHeight])
+    window.setupSimulator = setupSimulator(scene); 
 });
 
 const setupSimulator = (scene) => {
-    const wideSide = scene.size.x;
-    let factor = 1000 / wideSide;
+
+    const simulatorDiv = document.querySelector('.simulator');
+
+    const wideSide = scene.size.y;//max(scene.size.x, scene.size.y);
+    let factor = simulatorDiv.clientWidth / wideSide;
+
 
     window.scene = scene;
 
@@ -96,7 +101,7 @@ const setupSimulator = (scene) => {
                 (entity.size.y)*factor
                 ));
         }
-        if (entity.type === "Body") {
+        if (entity.type === "Block") {
             window.entities.push(new Wall(
                 (entity.pos.x)*factor,
                 (entity.pos.y)*factor,
@@ -125,6 +130,7 @@ var errorModal = document.getElementById("errorModal");
 var validModal = document.getElementById("validModal");
 var closeError = document.querySelector("#errorModal .close");
 var closeValid = document.querySelector("#validModal .close");
+
 closeError.onclick = function() {
     errorModal.style.display = "none";
 }
@@ -145,15 +151,13 @@ console.log(workerURL.href);
 
 const lsWorker = new Worker(workerURL.href, {
     type: 'classic',
-    name: 'RoboMl Language Server'
+    name: 'Robot Server'
 });
 wrapper.setWorker(lsWorker);
 
 // keep a reference to a promise for when the editor is finished starting, we'll use this to setup the canvas on load
 const startingPromise = wrapper.startEditor(document.getElementById("monaco-editor-root"));
 
-
-// rbot is running in the web!
 
 
 

@@ -1,8 +1,9 @@
 import type { DefaultSharedModuleContext, LangiumServices, LangiumSharedServices, Module, PartialLangiumServices } from 'langium';
-import { createDefaultModule, createDefaultSharedModule, inject } from 'langium';
+import { AbstractExecuteCommandHandler, createDefaultModule, createDefaultSharedModule, inject, ExecuteCommandAcceptor } from 'langium';
 import { RobotGeneratedModule, RobotGeneratedSharedModule } from './generated/module.js';
 import { RobotValidator, registerValidationChecks } from './robot-validator.js';
 import { RobotAcceptWeaver, weaveAcceptMethods } from './accept-weaver.js';
+import { parseAndGenerate, parseAndValidate } from '../web/index.js';
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -49,7 +50,7 @@ export const RobotModule: Module<RobotServices, PartialLangiumServices & RobotAd
  */
 export function createRobotServices(context: DefaultSharedModuleContext): {
     shared: LangiumSharedServices,
-    Robot: RobotServices
+    Robot: RobotServices,
 } {
     const shared = inject(
         createDefaultSharedModule(context),
@@ -60,8 +61,24 @@ export function createRobotServices(context: DefaultSharedModuleContext): {
         RobotGeneratedModule,
         RobotModule
     );
+    shared.lsp.ExecuteCommandHandler = new RobotCommandHandler();
     shared.ServiceRegistry.register(Robot);
     registerValidationChecks(Robot);
     weaveAcceptMethods(Robot);
     return { shared, Robot };
+}
+
+class RobotCommandHandler extends AbstractExecuteCommandHandler {
+    registerCommands(acceptor: ExecuteCommandAcceptor): void {
+        // accept a single command called 'parseAndGenerate'
+        acceptor('parseAndGenerate', args => {
+            // invoke generator on this data, and return the response
+            return parseAndGenerate(args[0]);
+        });
+
+        acceptor('parseAndValidate', args => {
+            // invoke generator on this data, and return the response
+            return parseAndValidate(args[0]);
+        });
+    }
 }

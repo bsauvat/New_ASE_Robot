@@ -18,7 +18,7 @@ export class BaseScene{
 
     constructor(size:Vector = new Vector(10000,10000)){
         this.size = size;
-        this.robot = new Entities.Robot(this.size.scale(0.5), new Vector(250,250), 0, 30)
+        this.robot = new Entities.Robot(this.size.scale(0.5), new Vector(250,250), 0, 30,/*this*/)
         this.entities.push(new Entities.Wall(Vector.null(), this.size.projX()));
         this.entities.push(new Entities.Wall(Vector.null(), this.size.projY()));
         this.entities.push(new Entities.Wall(this.size,     this.size.projY()));

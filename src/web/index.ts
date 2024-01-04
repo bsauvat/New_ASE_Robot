@@ -1,9 +1,9 @@
-import { AstNode, LangiumServices } from "langium";
+import { AstNode, LangiumServices, EmptyFileSystem, LangiumDocument } from "langium";
 import { URI } from "vscode-uri";
-import { EmptyFileSystem } from "langium";
 import { createRobotServices } from "../language/robot-module.js";
 import { ProgRobot } from "../language/generated/ast.js";
-import { generateCommands } from '../generator/generator';
+import { generateCommands } from '../generator/generator.js';
+import chalk from "chalk";
 
 /**
  * Extracts an AST node from a virtual document, represented as a string
@@ -20,6 +20,25 @@ import { generateCommands } from '../generator/generator';
     return doc.parseResult?.value as T;
 }
 
+async function extractDocumentFromString(content: string, services: LangiumServices): Promise<LangiumDocument> {
+    const doc = services.shared.workspace.LangiumDocumentFactory.fromString(content, URI.parse('memory://minilogo.document'));
+    await services.shared.workspace.DocumentBuilder.build([doc], { validation: true });
+
+    const validationErrors = (doc.diagnostics ?? []).filter(e => e.severity === 1);
+    if (validationErrors.length > 0) {
+        const errors = validationErrors.map(validationError =>
+            `line ${validationError.range.start.line + 1}: ${validationError.message} [${doc.textDocument.getText(validationError.range)}]`
+        );
+
+        console.error(chalk.red('There are validation errors:'));
+        errors.forEach(error => console.error(chalk.red(error)));
+
+        throw new Error(errors.join('\n'));
+    }
+
+    return doc;
+}
+
 /**
  * Parses a MiniLogo program & generates output as a list of Objects
  * @param miniLogoProgram MiniLogo program to parse
@@ -34,3 +53,47 @@ export async function parseAndGenerate (value: any): Promise<Object[]> {
     const scene = generateCommands(model, sceneWidth, sceneHeight);
     return Promise.resolve(scene);
 }
+
+/**
+ * Parse and validate a program written in our language.
+ * Verifies that no lexer or parser errors occur.
+ * Implicitly also checks for validation errors while extracting the document
+ *
+ * @param robotDslProgram RobotDsl program to parse
+ * @returns A list of errors, if any
+ */
+export const parseAndValidate = async (robotDslProgram: string): Promise<string[]> => {
+    const services = createRobotServices(EmptyFileSystem).Robot;
+    
+    try {
+        await extractDocumentFromString(robotDslProgram, services);
+        const document = await extractDocumentFromString(robotDslProgram, services);
+        const parseResult = document.parseResult;
+        if (parseResult.lexerErrors.length === 0 && 
+            parseResult.parserErrors.length === 0
+        ) {
+            console.log(chalk.green(`Parsed and validated successfully!`));
+            return [];
+        } else {
+            let errors: string[] = [];
+            if(parseResult.lexerErrors.length > 0) {
+                const lexerMessage = parseResult.lexerErrors.map(lexerError =>
+                    `${(lexerError.line) ? "line " + lexerError.line + 1 : ""}: ${lexerError.message}`
+                );
+                errors = errors.concat(lexerMessage);
+            }
+            if(parseResult.parserErrors.length > 0) {
+                const parserMessage = parseResult.parserErrors.map(parserError =>
+                    `${parserError.message}`
+                );
+                errors = errors.concat(parserMessage);
+            }
+            console.log(chalk.red(`Failed to parse and validate!`));
+            return errors;
+        }
+    } catch (error: any) {
+        console.log(chalk.red(`Failed to parse and validate!`));
+        return error.message.split('\n');
+    }
+};
+

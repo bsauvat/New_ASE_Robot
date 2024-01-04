@@ -7,8 +7,6 @@ webSocket.onopen = () => {
 };
 
 export function sendCode(code) {
-    console.log(typeof code);
-    console.log(code);
     const msg = {
         type: "code",
         text: code,
@@ -24,15 +22,13 @@ export function sendParseAndValidate(codeToParse) {
         text: codeToParse,
         date: Date.now(),
     };
-
     webSocket.send(JSON.stringify(msg));
-
 }
 
 webSocket.onmessage = (event) => {
     const message = JSON.parse(event.data);
-    console.log(message.data);
-    console.log(message.type);
+    console.log("message type : ", message.type, " , message data : ", message.data);
+
     switch (message.type) {
         case "robot":
             console.log(message.data);
@@ -41,11 +37,10 @@ webSocket.onmessage = (event) => {
             window.p5robot.move(robotData.dist);
             break;
         case "scene":
-            console.log(message.data.scene);
             const scene = message.data.scene;
             window.setupSimulator(scene);
         case "parseAndValidate":
-            console.log(message.text);
+            console.log("code to parse \n",message.text);
             break;
         default:
             console.log("default");
