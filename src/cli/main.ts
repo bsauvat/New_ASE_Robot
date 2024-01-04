@@ -4,16 +4,30 @@ import { Command } from 'commander';
 import { RobotLanguageMetaData } from '../language/generated/module.js';
 import { createRobotServices } from '../language/robot-module.js';
 import { extractAstNode } from './cli-util.js';
-import { generateJavaScript } from './generator.js';
+import { generateCommands } from '../generator/generator.js';
 import { NodeFileSystem } from 'langium/node';
 import { createDocumentFromString } from '../web/websocket/utils.js';
 import { wsServer } from '../web/app.js';
+import { extractDestinationAndName } from './cli-util.js';
+import path from 'path';
+import fs from 'fs';
 
 export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
     const services = createRobotServices(NodeFileSystem).Robot;
     const model = await extractAstNode<ProgRobot>(fileName, services);
-    const generatedFilePath = generateJavaScript(model, fileName, opts.destination);
-    console.log(chalk.green(`JavaScript code generated successfully: ${generatedFilePath}`));
+
+    // invoke generator to get commands
+    const cmds = generateCommands(model);
+
+    // handle file related functionality here now
+    const data = extractDestinationAndName(fileName, opts.destination);
+    const generatedFilePath = `${path.join(data.destination, data.name)}.json`;
+    if (!fs.existsSync(data.destination)) {
+        fs.mkdirSync(data.destination, { recursive: true });
+    }
+    fs.writeFileSync(generatedFilePath, JSON.stringify(cmds, undefined, 2));
+
+    console.log(chalk.green(`MiniLogo commands generated successfully: ${generatedFilePath}`));
 };
 
 export const parseAndValidate = async (code: string): Promise<void> => {

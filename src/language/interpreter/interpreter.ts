@@ -14,13 +14,17 @@ export class InterpreterVisitor implements RobotVisitor{
     private variables: Map<string,Expression>;
     public wait: boolean;
 
-    constructor() {
-        this.scene = new BaseScene();
-        this.robot = this.scene.robot;
-        //this.robot = new Robot(new Vector(100, 100), new Vector(20, 20), 0, 0, new BaseScene());
+    constructor(sceneWidth?: number, sceneHeight?:number) {
+        if(sceneWidth && sceneHeight) {
+            this.scene = new BaseScene(new Vector(sceneWidth*10, sceneHeight*10));
+            this.robot = this.scene.robot;
+        }
+        else {
+            this.scene = new BaseScene();
+            this.robot = this.scene.robot;
+        }
         this.variables = new Map<string, Expression>();
         this.wait = false;
-
         this.sendSceneToClient(this.scene);
     }
 
