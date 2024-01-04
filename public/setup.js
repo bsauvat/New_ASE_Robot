@@ -1,15 +1,17 @@
 import { MonacoEditorLanguageClientWrapper } from './monaco-editor-wrapper/index.js';
 import { buildWorkerDefinition } from "./monaco-editor-workers/index.js";
 import monarchSyntax from "./syntaxes/robot.monarch.js";
+import { sendCode, sendParseAndValidate } from './simulator/websocket.js';
 
 buildWorkerDefinition('./monaco-editor-workers/workers', new URL('', window.location.href).href, false);
 
 MonacoEditorLanguageClientWrapper.addMonacoStyles('monaco-editor-styles');
 
-const client = new MonacoEditorLanguageClientWrapper();
-const editorConfig = client.getEditorConfig();
-editorConfig.setMainLanguageId('robot');       // WARNING Dependent of your project
+const wrapper = new MonacoEditorLanguageClientWrapper();
+//const client = new MonacoEditorLanguageClientWrapper();
 
+const editorConfig = wrapper.getEditorConfig();
+editorConfig.setMainLanguageId('robot');       // WARNING Dependent of your project//
 editorConfig.setMonarchTokensProvider(monarchSyntax);
 
 let code = `def main() {
@@ -59,16 +61,15 @@ const typecheck = (async () => {
     
     if(errors.length > 0){
         const modal = document.getElementById("errorModal");
-        modal.style.display = "block";
+        modal.style.display = "Body";
     } else {
         const modal = document.getElementById("validModal");
-        modal.style.display = "block";
+        modal.style.display = "Body";
     }
 });
 
 const parseAndValidate = (async () => {
     console.info('validating current code...');
-    
     const codeToParse = wrapper.getEditor().getValue();
     sendParseAndValidate(codeToParse);
 });
@@ -81,7 +82,7 @@ const execute = (async () => {
 });
 
 const setupSimulator = (scene) => {
-    const wideSide = max(scene.size.x, scene.size.y);
+    const wideSide = scene.size.x;
     let factor = 1000 / wideSide;
 
     window.scene = scene;
@@ -95,7 +96,7 @@ const setupSimulator = (scene) => {
                 (entity.size.y)*factor
                 ));
         }
-        if (entity.type === "Block") {
+        if (entity.type === "Body") {
             window.entities.push(new Wall(
                 (entity.pos.x)*factor,
                 (entity.pos.y)*factor,
@@ -115,8 +116,10 @@ const setupSimulator = (scene) => {
     );
 }
 
+window.setupSimulator = setupSimulator;
 window.execute = execute;
 window.typecheck = typecheck;
+window.parseAndValidate = parseAndValidate;
 
 var errorModal = document.getElementById("errorModal");
 var validModal = document.getElementById("validModal");
@@ -144,10 +147,10 @@ const lsWorker = new Worker(workerURL.href, {
     type: 'classic',
     name: 'RoboMl Language Server'
 });
-client.setWorker(lsWorker);
+wrapper.setWorker(lsWorker);
 
 // keep a reference to a promise for when the editor is finished starting, we'll use this to setup the canvas on load
-const startingPromise = client.startEditor(document.getElementById("monaco-editor-root"));
+const startingPromise = wrapper.startEditor(document.getElementById("monaco-editor-root"));
 
 
 // rbot is running in the web!

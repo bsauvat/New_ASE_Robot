@@ -16,7 +16,7 @@
   },
   "include": [
      "src/**/*.ts"
-  ],
+, "src/static/simulator/websocket.js"  ],
   "exclude": [
      "out",
      "node_modules"

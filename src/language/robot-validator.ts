@@ -1,8 +1,5 @@
-//import type { ValidationAcceptor } from 'langium';
 import type { ValidationChecks } from 'langium';
-
 import type { RobotAstType } from './generated/ast.js';
-//import type { Person } from './generated/ast.js';
 import type { RobotServices } from './robot-module.js';
 
 /**
