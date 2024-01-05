@@ -1,7 +1,7 @@
-import { MonacoEditorLanguageClientWrapper, vscode } from './monaco-editor-wrapper/index.js';
+import { MonacoEditorLanguageClientWrapper, vscode } from "./monaco-editor-wrapper/index.js";
 import { buildWorkerDefinition } from "./monaco-editor-workers/index.js";
 import monarchSyntax from "./syntaxes/robot.monarch.js";
-import { sendParseAndValidate } from './simulator/websocket.js';
+
 
 buildWorkerDefinition('./monaco-editor-workers/workers', new URL('', window.location.href).href, false);
 
@@ -13,7 +13,7 @@ const editorConfig = wrapper.getEditorConfig();
 editorConfig.setMainLanguageId('robot');       // WARNING Dependent of your project//
 editorConfig.setMonarchTokensProvider(monarchSyntax);
 
-let code = `def main() {
+let code = `def entry() {
     square();
     round_trip();
   }
@@ -67,15 +67,27 @@ const typecheck = (async () => {
 
 const parseAndValidate = (async () => {
     console.info('validating current code...');
-    const codeToParse = wrapper.getEditor().getValue();
-    sendParseAndValidate(codeToParse);
+    const code = wrapper.editor.getValue();
+    const errors = await vscode.commands.executeCommand('parseAndValidate', code);
+
+    if(errors.length > 0){
+        const modal = document.getElementById("errorModal");
+        modal.style.display = "block";
+        errors.forEach((error) => {
+            const errorDiv = document.createElement("div");
+            errorDiv.innerHTML = error;
+            modal.getElementsByClassName("modal-body")[0].appendChild(errorDiv);
+        });
+    } else {
+        const modal = document.getElementById("validModal");
+        modal.style.display = "block";
+    }
+    
 });
 
 const execute = (async () => {
     console.info('running current code...');
     const codeToExecute = wrapper.getEditor().getValue();
-    //sendCode(code);
-
     const simulatorDiv = document.querySelector('.simulator');
     // Execute custom LSP command, and receive the response
     const scene = await vscode.commands.executeCommand('parseAndGenerate', [codeToExecute, simulatorDiv.clientWidth, simulatorDiv.clientHeight])
@@ -88,7 +100,6 @@ const setupSimulator = (scene) => {
 
     const wideSide = scene.size.y;//max(scene.size.x, scene.size.y);
     let factor = simulatorDiv.clientWidth / wideSide;
-
 
     window.scene = scene;
 
@@ -121,7 +132,6 @@ const setupSimulator = (scene) => {
     );
 }
 
-window.setupSimulator = setupSimulator;
 window.execute = execute;
 window.typecheck = typecheck;
 window.parseAndValidate = parseAndValidate;

@@ -1,5 +1,5 @@
-import { InterpreterVisitor } from "../language/interpreter/interpreter.js";
-import { ProgRobot } from "../language/visitor.js";
+import { InterpreterVisitor } from "../language/semantic/interpreter.js";
+import { ProgRobot } from "../language/semantic/visitor.js";
 
 /**
  * Generates simple movement commands from a RobotDsl Model

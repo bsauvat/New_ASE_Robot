@@ -42,7 +42,7 @@ class Robot {
         this.y += anglesin*dist;
     }
 
-    side(dist){
+    strafe(dist){
         let anglecos = cos(this.angle);
         let anglesin = sin(this.angle);
         this.x += -anglesin*dist;
