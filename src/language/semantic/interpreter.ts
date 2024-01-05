@@ -1,18 +1,14 @@
-import { wsServer } from "../../web/app.js";
+import { Expression, MultDiv, StrafeRight, Unit, Body, Comparison, Condition, BOOL_const, Fonction, CallFunction, GetDistance, GetSpeed, GetTimestamp, Backward, Forward, Loop, ProgRobot, INT_const, Print, SpeedCommand, TurnLeft, TurnRight, CallVariable,VariableDeclaration, UpdateVariable, And, Or, Equality, PlusMinus,INT_neg_const, DeclaredParameter, StrafeLeft, Return, STRING_const, Atomic } from "../generated/ast.js";
 import { Robot } from "../../web/simulator/entities.js";
 import { BaseScene, Scene } from "../../web/simulator/scene.js";
 import { Vector } from "../../web/simulator/utils.js";
-import { Expression, MultDiv, StrafeRight, Unit } from "../generated/ast.js";
-import { Body, Comparison, Condition, BOOL_const, Fonction, CallFunction, GetDistance, GetSpeed, GetTimestamp, 
-    Backward, Forward, Loop, ProgRobot, INT_const, Print, RobotVisitor, SpeedCommand, TurnLeft, TurnRight, CallVariable,
-    VariableDeclaration, UpdateVariable, acceptNode, And, Or, Equality, PlusMinus,INT_neg_const, DeclaredParameter, StrafeLeft, Return, STRING_const, Atomic } from "../visitor.js";
+import { RobotVisitor, acceptNode } from "./visitor.js";
 
 export class InterpreterVisitor implements RobotVisitor{
 
     private scene: Scene;
     private robot: Robot;
     private variables: Map<string,Expression>;
-    public wait: boolean;
 
     constructor(sceneWidth?: number, sceneHeight?:number) {
         if(sceneWidth && sceneHeight) {
@@ -24,8 +20,6 @@ export class InterpreterVisitor implements RobotVisitor{
             this.robot = this.scene.robot;
         }
         this.variables = new Map<string, Expression>();
-        this.wait = false;
-        this.sendSceneToClient(this.scene);
     }
 
 
@@ -66,11 +60,11 @@ export class InterpreterVisitor implements RobotVisitor{
     }
 
     visitProgRobot(node: ProgRobot) {
-        for (let f of node.functions) {
-            if (f.name === "entry") {
-                return acceptNode(f, this);
-            }
+        const entryFunction = node.functions.find(func => func.name === "entry");
+        if (entryFunction) {
+            acceptNode(entryFunction, this);
         }
+        return this.scene;
     }
 
     private toMeters(distance: number, unit: Unit): number {
@@ -94,39 +88,31 @@ export class InterpreterVisitor implements RobotVisitor{
     visitTurnLeft(node: TurnLeft) {
         let angle: number = (node.angle as any) * Math.PI / 180; // degree to radian
         this.robot.turn(-angle);
-        this.sendRobotToClient({dist: 0, strafe: 0, angle: -angle});
     }
 
     visitTurnRight(node: TurnRight) {
         let angle: number = (node.angle as any) * Math.PI / 180; // degree to radian
         this.robot.turn(angle);
-        this.sendRobotToClient({dist: 0, strafe: 0, angle: angle});
     }
 
     visitBackward(node: Backward) {
         const distance: number = this.toMeters(acceptNode(node.distance, this), node.unit);
         this.robot.move(-distance);
-
-        this.sendRobotToClient({dist: -distance, strafe: 0, angle: 0});
     }
 
     visitForward(node: Forward) {
         const distance: number = this.toMeters(acceptNode(node.distance, this), node.unit);
         this.robot.move(distance);
-
-        this.sendRobotToClient({dist: distance, strafe: 0, angle: 0});
     }
 
     visitStrafeLeft(node: StrafeLeft) {
         const strafe: number = this.toMeters(acceptNode(node.distance, this), node.unit);
         this.robot.strafe(-strafe);
-        this.sendRobotToClient({dist: 0, strafe: -strafe, angle: 0})
     }
 
     visitStrafeRight(node: StrafeRight) {
         const strafe: number = this.toMeters(acceptNode(node.distance, this), node.unit);
         this.robot.strafe(strafe);
-        this.sendRobotToClient({dist: 0, strafe: strafe, angle: 0})
     }
 
     visitDeclaredParameter(node: DeclaredParameter) {
@@ -274,13 +260,5 @@ export class InterpreterVisitor implements RobotVisitor{
 
     getScene(): Scene {
         return this.scene;
-    }
-
-    private sendRobotToClient({dist, strafe, angle}: {dist: number,strafe: number, angle: number}): void {
-        wsServer.emitRobot({dist, strafe, angle});
-    }
-
-    private sendSceneToClient(scene: Scene): void {
-        wsServer.emitScene(this.scene);
     }
 }

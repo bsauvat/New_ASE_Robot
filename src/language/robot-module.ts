@@ -2,7 +2,7 @@ import type { DefaultSharedModuleContext, LangiumServices, LangiumSharedServices
 import { AbstractExecuteCommandHandler, createDefaultModule, createDefaultSharedModule, inject, ExecuteCommandAcceptor } from 'langium';
 import { RobotGeneratedModule, RobotGeneratedSharedModule } from './generated/module.js';
 import { RobotValidator, registerValidationChecks } from './robot-validator.js';
-import { RobotAcceptWeaver, weaveAcceptMethods } from './accept-weaver.js';
+import { RobotAcceptWeaver, weaveAcceptMethods } from './semantic/accept-weaver.js';
 import { parseAndGenerate, parseAndValidate } from '../web/index.js';
 
 /**
@@ -75,7 +75,7 @@ class RobotCommandHandler extends AbstractExecuteCommandHandler {
             // invoke generator on this data, and return the response
             return parseAndGenerate(args[0]);
         });
-
+        // accept a single command called 'parseAndValidate'
         acceptor('parseAndValidate', args => {
             // invoke generator on this data, and return the response
             return parseAndValidate(args[0]);

@@ -1,4 +1,4 @@
-import { ProgRobot } from '../language/visitor.js';
+import { ProgRobot } from '../language/semantic/visitor.js';
 import chalk from 'chalk';
 import { Command } from 'commander';
 import { RobotLanguageMetaData } from '../language/generated/module.js';

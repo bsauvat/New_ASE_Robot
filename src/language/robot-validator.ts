@@ -1,5 +1,5 @@
-import type { ValidationChecks } from 'langium';
-import type { RobotAstType } from './generated/ast.js';
+import type { ValidationAcceptor, ValidationChecks } from 'langium';
+import type { RobotAstType, ProgRobot } from './generated/ast.js';
 import type { RobotServices } from './robot-module.js';
 
 /**
@@ -9,7 +9,7 @@ export function registerValidationChecks(services: RobotServices) {
     const registry = services.validation.ValidationRegistry;
     const validator = services.validation.RobotValidator;
     const checks: ValidationChecks<RobotAstType> = {
-        //Person: validator.checkPersonStartsWithCapital
+        ProgRobot: validator.checkUniqueDefs,
     };
     registry.register(checks, validator);
 }
@@ -19,13 +19,16 @@ export function registerValidationChecks(services: RobotServices) {
  */
 export class RobotValidator {
 
-    // checkPersonStartsWithCapital(person: Person, accept: ValidationAcceptor): void {
-    //     if (person.name) {
-    //         const firstChar = person.name.substring(0, 1);
-    //         if (firstChar.toUpperCase() !== firstChar) {
-    //             accept('warning', 'Person name should start with a capital.', { node: person, property: 'name' });
-    //         }
-    //     }
-    // }
+    checkUniqueDefs(robot: ProgRobot, accept: ValidationAcceptor): void {
+        // create a set of visited functions
+        // and report an error when we see one we've already seen
+        const reported = new Set();
+        robot.functions.forEach(f => {
+            if (reported.has(f.name)) {
+                accept('error',  `Function has non-unique name '${f.name}'.`,  {node: f, property: 'name'});
+            }
+            reported.add(f.name);
+        });
+    }
 
 }

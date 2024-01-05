@@ -40,16 +40,19 @@ async function extractDocumentFromString(content: string, services: LangiumServi
 }
 
 /**
- * Parses a MiniLogo program & generates output as a list of Objects
- * @param miniLogoProgram MiniLogo program to parse
- * @returns Generated output from this MiniLogo program
+ * Parses a Robot program & generates output as a list of Objects
+ * @param progRobot Robot program to parse
+ * @param sceneWidth width of the scene to generate commands for
+ * @param sceneHeight height of the scene to generate commands for
+ * @returns Generated output from this RobotDsl program
  */
 export async function parseAndGenerate (value: any): Promise<Object[]> {
-    const progrobot = value[0];
+    const progRobot = value[0];
     const sceneWidth = value[1];
     const sceneHeight = value[2];
     const services = createRobotServices(EmptyFileSystem).Robot;
-    const model = await extractAstNodeFromString<ProgRobot>(progrobot, services);
+    const model = await extractAstNodeFromString<ProgRobot>(progRobot, services);
+    // generate movement commands from the model
     const scene = generateCommands(model, sceneWidth, sceneHeight);
     return Promise.resolve(scene);
 }
@@ -59,15 +62,15 @@ export async function parseAndGenerate (value: any): Promise<Object[]> {
  * Verifies that no lexer or parser errors occur.
  * Implicitly also checks for validation errors while extracting the document
  *
- * @param robotDslProgram RobotDsl program to parse
+ * @param progRobot Robot program to parse
  * @returns A list of errors, if any
  */
-export const parseAndValidate = async (robotDslProgram: string): Promise<string[]> => {
+export const parseAndValidate = async (progRobot: string): Promise<string[]> => {
     const services = createRobotServices(EmptyFileSystem).Robot;
     
     try {
-        await extractDocumentFromString(robotDslProgram, services);
-        const document = await extractDocumentFromString(robotDslProgram, services);
+        await extractDocumentFromString(progRobot, services);
+        const document = await extractDocumentFromString(progRobot, services);
         const parseResult = document.parseResult;
         if (parseResult.lexerErrors.length === 0 && 
             parseResult.parserErrors.length === 0
