@@ -27,11 +27,9 @@ export function sendParseAndValidate(codeToParse) {
 
 webSocket.onmessage = (event) => {
     const message = JSON.parse(event.data);
-    console.log("message type : ", message.type, " , message data : ", message.data);
 
     switch (message.type) {
         case "robot":
-            console.log(message.data);
             const robotData = message.data;
             window.p5robot.turn(robotData.angle);
             window.p5robot.move(robotData.dist);

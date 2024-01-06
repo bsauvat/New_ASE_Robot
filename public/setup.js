@@ -1,16 +1,16 @@
 import { MonacoEditorLanguageClientWrapper, vscode } from './monaco-editor-wrapper/index.js';
 import { buildWorkerDefinition } from "./monaco-editor-workers/index.js";
 import monarchSyntax from "./syntaxes/robot.monarch.js";
-import { sendParseAndValidate } from './simulator/websocket.js';
+import {sendCode, sendParseAndValidate} from '../web/websocket/websocket.js';
 
 buildWorkerDefinition('./monaco-editor-workers/workers', new URL('', window.location.href).href, false);
 
 MonacoEditorLanguageClientWrapper.addMonacoStyles('monaco-editor-styles');
 
 const wrapper = new MonacoEditorLanguageClientWrapper();
-
 const editorConfig = wrapper.getEditorConfig();
-editorConfig.setMainLanguageId('robot');       // WARNING Dependent of your project//
+editorConfig.setMainLanguageId('robot-language');
+
 editorConfig.setMonarchTokensProvider(monarchSyntax);
 
 let code = `def main() {
@@ -73,21 +73,18 @@ const parseAndValidate = (async () => {
 
 const execute = (async () => {
     console.info('running current code...');
-    const codeToExecute = wrapper.getEditor().getValue();
-    //sendCode(code);
+    
+    // get code to interpret
+    const code = wrapper.getEditor().getValue();
+    
+    sendCode(code);
 
-    const simulatorDiv = document.querySelector('.simulator');
-    // Execute custom LSP command, and receive the response
-    const scene = await vscode.commands.executeCommand('parseAndGenerate', [codeToExecute, simulatorDiv.clientWidth, simulatorDiv.clientHeight])
-    window.setupSimulator = setupSimulator(scene); 
 });
 
 const setupSimulator = (scene) => {
 
-    const simulatorDiv = document.querySelector('.simulator');
-
-    const wideSide = scene.size.y;//max(scene.size.x, scene.size.y);
-    let factor = simulatorDiv.clientWidth / wideSide;
+    const wideSide = max(scene.size.x, scene.size.y);
+    let factor = 1000 / wideSide;
 
 
     window.scene = scene;
@@ -153,10 +150,10 @@ const lsWorker = new Worker(workerURL.href, {
     type: 'classic',
     name: 'Robot Server'
 });
-wrapper.setWorker(lsWorker);
+client.setWorker(lsWorker);
 
 // keep a reference to a promise for when the editor is finished starting, we'll use this to setup the canvas on load
-const startingPromise = wrapper.startEditor(document.getElementById("monaco-editor-root"));
+const startingPromise = client.startEditor(document.getElementById("monaco-editor-root"));
 
 
 
