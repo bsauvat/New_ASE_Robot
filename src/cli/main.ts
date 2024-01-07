@@ -6,6 +6,13 @@ import { createRobotServices } from '../language/robot-module.js';
 import { extractAstNode, extractDocument } from './cli-util.js';
 import { generateCommands } from '../generator/generator.js';
 import { NodeFileSystem } from 'langium/node';
+import * as url from 'node:url';
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+
+const packagePath = path.resolve(__dirname, '..', '..', 'package.json');
+const packageContent = await fs.readFile(packagePath, 'utf-8');
 
 export const parseAndValidate = async (fileName: string): Promise<void> => {
     const services = createRobotServices(NodeFileSystem).Robot;
@@ -42,9 +49,7 @@ export type GenerateOptions = {
 export default function(): void {
     const program = new Command();
 
-    program
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        .version(require('../../package.json').version);
+    program.version(JSON.parse(packageContent).version);
 
     const fileExtensions = RobotLanguageMetaData.fileExtensions.join(', ');
 
@@ -64,7 +69,9 @@ export default function(): void {
         .command('parseAndValidate')
         .argument('<file>', 'Source file to parse & validate (ending in ${fileExtensions})')
         .description('Indicates where a program parses & validates successfully, but produces no output code')
-        .action(parseAndValidate)
+        .action(parseAndValidate);
 
     program.parse(process.argv);
+
+    
 }
