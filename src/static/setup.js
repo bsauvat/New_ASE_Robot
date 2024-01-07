@@ -160,10 +160,10 @@ const lsWorker = new Worker(workerURL.href, {
     type: 'classic',
     name: 'Robot Server'
 });
-client.setWorker(lsWorker);
+wrapper.setWorker(lsWorker);
 
 // keep a reference to a promise for when the editor is finished starting, we'll use this to setup the canvas on load
-const startingPromise = client.startEditor(document.getElementById("monaco-editor-root"));
+const startingPromise = wrapper.startEditor(document.getElementById("monaco-editor-root"));
 
 
 

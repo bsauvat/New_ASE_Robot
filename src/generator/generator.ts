@@ -16,7 +16,7 @@ export function generateCommands(robot: ProgRobot, sceneWidth?: number, sceneHei
  * @param ProgRobot Model to generate Arduino code from
  * @returns Generated Arduino code that captures the program's intent
  */
-export function generateArduinoCode(robot: ProgRobot): String {
-    const visitor = new RobotCompilerImpl();
-    return robot.accept(visitor)
-}
+// export function generateArduinoCode(robot: ProgRobot): String {
+    // const visitor = new RobotCompilerImpl();
+    // return robot.accept(visitor)
+// }

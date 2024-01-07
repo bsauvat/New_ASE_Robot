@@ -4,7 +4,7 @@ import { Command } from 'commander';
 import { RobotLanguageMetaData } from '../language/generated/module.js';
 import { createRobotServices } from '../language/robot-module.js';
 import { extractAstNode, extractDocument } from './cli-util.js';
-import { generateArduinoCode, generateCommands } from '../generator/generator.js';
+import { generateCommands } from '../generator/generator.js';
 import { NodeFileSystem } from 'langium/node';
 import * as url from 'node:url';
 import * as fs from 'node:fs/promises';
@@ -13,17 +13,6 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const packagePath = path.resolve(__dirname, '..', '..', 'package.json');
 const packageContent = await fs.readFile(packagePath, 'utf-8');
-
-export const compile = async (fileName: string): Promise<void> => {
-    const services = createRobotServices(NodeFileSystem).Robot;
-    const model = await extractAstNode<ProgRobot>(fileName, services);
-
-    // Generate the Arduino code using the visitor
-    const arduinoCode = generateArduinoCode(model);
-
-    // Output the generated Arduino code
-    console.log(arduinoCode);
-};
 
 export const parseAndValidate = async (fileName: string): Promise<void> => {
     const services = createRobotServices(NodeFileSystem).Robot;
@@ -81,12 +70,6 @@ export default function(): void {
         .argument('<file>', 'Source file to parse & validate (ending in ${fileExtensions})')
         .description('Indicates where a program parses & validates successfully, but produces no output code')
         .action(parseAndValidate);
-
-    program
-        .command('compile') 
-        .argument('<file>', `Source file to compile (ending in ${fileExtensions})`) 
-        .description('Compiles the source file to Arduino code')
-        .action(compile);
 
     program.parse(process.argv);
 

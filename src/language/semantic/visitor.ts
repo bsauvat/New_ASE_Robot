@@ -573,9 +573,9 @@ export class ProgRobot implements ASTInterfaces.ProgRobot {
         // this.$container = container;
     }
 
-    /*accept(visitor: RobotVisitor): any{
+    accept(visitor: RobotVisitor): any{
         return visitor.visitProgRobot(this);
-    }*/
+    }
 }
 
 export class DeclaredParameter implements ASTInterfaces.DeclaredParameter {
