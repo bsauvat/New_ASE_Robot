@@ -212,6 +212,7 @@ export class InterpreterVisitor implements RobotVisitor{
         }
 
         for (let i = 0; i < node.op.length; i++){
+            console.log("op : ",node.op[i]);
             switch(node.op[i]){
                 case '+':
                     return acceptNode(node.left, this) + acceptNode((node.right[i]), this);
