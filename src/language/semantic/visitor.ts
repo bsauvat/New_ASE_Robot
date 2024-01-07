@@ -41,7 +41,7 @@ export interface RobotVisitor {
 
     visitMultDiv(node: MultDiv): any;
 
-    //visitTerm(node: Term): any;
+    visitTerm(node: Term): any;
 
     visitAtomic(node: Atomic): any;
 
@@ -298,6 +298,7 @@ export class MultDiv implements ASTInterfaces.MultDiv {
     }
 }
 
+export class Term implements ASTInterfaces.Term{}
 
 export class Atomic implements ASTInterfaces.Atomic {
     $type: 'Atomic';
