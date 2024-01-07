@@ -1,7 +1,7 @@
 import { MonacoEditorLanguageClientWrapper, vscode } from './monaco-editor-wrapper/index.js';
 import { buildWorkerDefinition } from "./monaco-editor-workers/index.js";
 import monarchSyntax from "./syntaxes/robot.monarch.js";
-import { sendParseAndValidate } from './simulator/websocket.js';
+import { sendCode, sendParseAndValidate } from './simulator/websocket.js';
 
 buildWorkerDefinition('./monaco-editor-workers/workers', new URL('', window.location.href).href, false);
 
@@ -13,7 +13,7 @@ const editorConfig = wrapper.getEditorConfig();
 editorConfig.setMainLanguageId('robot');       // WARNING Dependent of your project//
 editorConfig.setMonarchTokensProvider(monarchSyntax);
 
-let code = `def main() {
+let code = `def entry() {
     square();
     round_trip();
   }
@@ -73,25 +73,18 @@ const parseAndValidate = (async () => {
 
 const execute = (async () => {
     console.info('running current code...');
-    const codeToExecute = wrapper.getEditor().getValue();
-    //sendCode(code);
-
-    const simulatorDiv = document.querySelector('.simulator');
-    // Execute custom LSP command, and receive the response
-    const scene = await vscode.commands.executeCommand('parseAndGenerate', [codeToExecute, simulatorDiv.clientWidth, simulatorDiv.clientHeight])
-    window.setupSimulator = setupSimulator(scene); 
+    
+    // get code to interpret
+    const code = wrapper.getEditor().getValue();
+    sendCode(code);
 });
 
 const setupSimulator = (scene) => {
 
-    const simulatorDiv = document.querySelector('.simulator');
-
     const wideSide = scene.size.y;//max(scene.size.x, scene.size.y);
-    let factor = simulatorDiv.clientWidth / wideSide;
-
+    let factor = 1000 / wideSide;
 
     window.scene = scene;
-
     scene.entities.forEach((entity) => {
         if (entity.type === "Wall") {
             window.entities.push(new Wall(

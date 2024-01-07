@@ -1,39 +1,52 @@
-import { ProgRobot } from '../language/visitor.js';
+import type { ProgRobot } from '../language/generated/ast.js';
 import chalk from 'chalk';
 import { Command } from 'commander';
 import { RobotLanguageMetaData } from '../language/generated/module.js';
 import { createRobotServices } from '../language/robot-module.js';
-import { extractAstNode, extractDocument } from './cli-util.js';
-import { generateCommands } from '../generator/generator.js';
+import { extractAstNode } from './cli-util.js';
+import { generateJavaScript, writeAst } from './generator.js';
 import { NodeFileSystem } from 'langium/node';
+import { interpret } from '../language/semantic/interpret.js';
+import { createDocumentFromString } from '../web/websocket/utils.js';
+import { wsServer } from '../web/app.js';
 
-export const parseAndValidate = async (fileName: string): Promise<void> => {
+export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
     const services = createRobotServices(NodeFileSystem).Robot;
-    const document = await extractDocument(fileName, services);
-    const parseResult = document.parseResult;
+    const model = await extractAstNode<ProgRobot>(fileName, services);
+    const generatedFilePath = generateJavaScript(model, fileName, opts.destination);
+    console.log(chalk.green(`JavaScript code generated successfully: ${generatedFilePath}`));
+};
+
+export const generateAST = async (fileName: string): Promise<void> => {
+    const services = createRobotServices(NodeFileSystem).Robot;
+    const model = await extractAstNode<ProgRobot>(fileName, services);
+    const generatedFilePath = writeAst(model, "output");
+    console.log(chalk.green(`JavaScript code generated successfully: ${generatedFilePath}`));
+}
+
+export const visitFile = async (fileName: string): Promise<void> => {
+    const services = createRobotServices(NodeFileSystem).Robot;
+    const model = await extractAstNode<ProgRobot>(fileName, services);
+    interpret(model);
+}
+
+export const parseAndValidate = async (code: string): Promise<void> => {
+
+    const contentToParse = await createDocumentFromString(code);
+
+    const parseResult = contentToParse.parseResult;
+    // verify no lexer, parser, or general diagnostic errors show up
     if (parseResult.lexerErrors.length === 0 && 
         parseResult.parserErrors.length === 0
     ) {
-        console.log(chalk.green(`Parsed and validated ${fileName} successfully!`));
+
+        console.log(chalk.green(`Parsed and validated successfully!`));
+        wsServer.emitParsedAndValidated(true);
     } else {
-        console.log(chalk.red(`Failed to parse and validate ${fileName}!`));
+        console.log(chalk.red(`Failed to parse and validate !`));
+        wsServer.emitParsedAndValidated(false);
     }
-};
-
-export const generateAst = async (fileName: string): Promise<void> => {
-    const services = createRobotServices(NodeFileSystem).Robot;
-    const model = await extractAstNode<ProgRobot>(fileName, services);
-    // serialize & output the model ast
-    const serializedAst = services.serializer.JsonSerializer.serialize(model, { sourceText: true, textRegions: true });
-    console.log(serializedAst);
-};
-
-export const generateCmds = async (fileName: string): Promise<void> => {
-    const services = createRobotServices(NodeFileSystem).Robot;
-    const model = await extractAstNode<ProgRobot>(fileName, services);
-    // directly output these commands to the console
-    console.log(JSON.stringify(generateCommands(model)));
-};
+}
 
 export type GenerateOptions = {
     destination?: string;
@@ -47,24 +60,18 @@ export default function(): void {
         .version(require('../../package.json').version);
 
     const fileExtensions = RobotLanguageMetaData.fileExtensions.join(', ');
+    
+    program
+        .command('generateAST')
+        .argument('<file>', `Source file ending in ${fileExtensions}`)
+        .description('Command to generate the AST of a source file')
+        .action(generateAST);
 
     program
-        .command('generate')
-        .argument('<file>', `source file (possible file extensions: ${fileExtensions})`)
-        .description('Generates a RobotDsl AST in JSON format')
-        .action(generateAst);
-
-    program
-        .command('generate-cmds')
-        .argument('<file>', `source file (possible file extensions: ${fileExtensions})`)
-        .description('Generates RobotDsl movement commands, suitable for consumption by a simple stack-based drawing machine')
-        .action(generateCmds);
-
-    program
-        .command('parseAndValidate')
-        .argument('<file>', 'Source file to parse & validate (ending in ${fileExtensions})')
-        .description('Indicates where a program parses & validates successfully, but produces no output code')
-        .action(parseAndValidate)
+        .command("visitFile")
+        .argument('<file>', `Source file ending in ${fileExtensions}`)
+        .description('Command to generate the AST of a source file')
+        .action(visitFile)
 
     program.parse(process.argv);
 }

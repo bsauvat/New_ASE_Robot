@@ -27,11 +27,9 @@ export function sendParseAndValidate(codeToParse) {
 
 webSocket.onmessage = (event) => {
     const message = JSON.parse(event.data);
-    console.log("message type : ", message.type, " , message data : ", message.data);
-
+    console.log("message type : ",message.type)
     switch (message.type) {
         case "robot":
-            console.log(message.data);
             const robotData = message.data;
             window.p5robot.turn(robotData.angle);
             window.p5robot.move(robotData.dist);
@@ -39,8 +37,16 @@ webSocket.onmessage = (event) => {
         case "scene":
             const scene = message.data.scene;
             window.setupSimulator(scene);
+            break;
         case "parseAndValidate":
-            console.log("code to parse \n",message.text);
+            if (message.success) {
+                document.getElementById("green-check").style.display = "block";
+                document.getElementById("red-cross").style.display = "none";
+            } else if (!message.success) {
+                document.getElementById("red-cross").style.display = "block";
+                document.getElementById("green-check").style.display = "none";
+            }
+            console.log(message.text);
             break;
         default:
             console.log("default");

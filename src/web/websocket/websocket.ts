@@ -1,10 +1,10 @@
 import { WebSocketServer } from 'ws';
 import { parseAndValidate } from "../../cli/main.js";
-import { ProgRobot } from "../../language/visitor.js";
-import { interpret } from "../../semantic/interpreter.js";
+import { ProgRobot } from "../../language/semantic/visitor.js";
+import { interpret } from "../../language/semantic/interpret.js";
 import { createAstFromString } from "./utils.js";
 import { Scene } from "../simulator/scene.js";
-import { InterpreterVisitor } from "../../language/interpreter/interpreter.js";
+import { InterpreterVisitor } from "../../language/semantic/interpreter/interpreter.js";
 
 export const SOCKET_URL = 'ws://localhost:3000';
 
@@ -46,6 +46,8 @@ export class WebSocketReceiver {
                 codeReceived = message.text;
                 parseAndValidate(codeReceived);
                 break;
+            case "scene":
+                
 
             default:
                 break;
