@@ -83,7 +83,7 @@ const setupSimulator = (scene) => {
 
     const wideSide = scene.size.y;//max(scene.size.x, scene.size.y);
     let factor = 1000 / wideSide;
-
+    console.log("push setup");
     window.scene = scene;
     scene.entities.forEach((entity) => {
         if (entity.type === "Wall") {
@@ -112,6 +112,7 @@ const setupSimulator = (scene) => {
         scene.robot.size.y * factor,
         scene.robot.rad
     );
+    console.log("fin push");
 }
 
 window.setupSimulator = setupSimulator;
