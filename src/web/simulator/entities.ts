@@ -1,5 +1,5 @@
 import { Vector, Ray } from './utils.js';
-import { Scene } from "./scene.js"
+//import { Scene } from "./scene.js";
 
 export interface Entities {
     type:string;
@@ -12,18 +12,18 @@ export interface Entities {
 export class Robot implements Entities{
     
     type:string = "Robot";
+    //scene:Scene;
     pos:Vector;
-    scene:Scene;
     size:Vector;
     rad:number; // stored in radian
     speed:number
   
-    constructor(pos:Vector, size:Vector, angle:number, speed:number, scene:Scene) {
+    constructor(pos:Vector, size:Vector, angle:number, speed:number /*,scene:Scene*/) {
         this.pos = pos;
         this.size = size;
         this.rad = angle * Math.PI / 180;
         this.speed = speed;
-        this.scene=scene;
+        //this.scene=scene;
     }
   
     intersect(ray :Ray) : Vector[] {
@@ -32,23 +32,23 @@ export class Robot implements Entities{
 
     turn(angle:number) : void {
         this.rad += angle;
-        const timeElapsed = angle / this.speed * 1000;
-        this.scene.time += timeElapsed;
-        this.scene.timestamps.push(new Timestamp(this.scene.time, this));
+        // const timeElapsed = angle / this.speed * 1000;
+        // this.scene.time += timeElapsed;
+        // this.scene.timestamps.push(new Timestamp(this.scene.time, this));
     }
 
     move(dist:number) : void {
         this.pos = this.pos.plus(Vector.fromAngle(this.rad, dist));
-        const timeElapsed = dist / this.speed * 1000;
-        this.scene.time += timeElapsed;
-        this.scene.timestamps.push(new Timestamp(this.scene.time, this));
+        // const timeElapsed = dist / this.speed * 1000;
+        // this.scene.time += timeElapsed;
+        // this.scene.timestamps.push(new Timestamp(this.scene.time, this));
     }
 
     strafe(dist:number) : void {
         this.pos = this.pos.plus(Vector.fromAngle(this.rad + Math.PI / 2, dist));
-        const timeElapsed = dist / this.speed * 1000;
-        this.scene.time += timeElapsed;
-        this.scene.timestamps.push(new Timestamp(this.scene.time, this));
+        // const timeElapsed = dist / this.speed * 1000;
+        // this.scene.time += timeElapsed;
+        // this.scene.timestamps.push(new Timestamp(this.scene.time, this));
     }
 
     getRay(){
@@ -60,7 +60,7 @@ export class Timestamp extends Robot{
     time:number;
 
     constructor(time:number, robot:Robot){
-        super(robot.pos.scale(1), robot.size.scale(1), robot.rad, robot.speed, robot.scene);
+        super(robot.pos.scale(1), robot.size.scale(1), robot.rad, robot.speed/*, robot.scene*/);
         this.rad = robot.rad;
         this.time = time;
     }

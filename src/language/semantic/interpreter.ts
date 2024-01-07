@@ -235,7 +235,10 @@ export class InterpreterVisitor implements RobotVisitor{
     }
 
     visitAtomic(node: Atomic) {
-        return node.value;
+        if (node.callFunction) {return node.callFunction;}
+        else if (node.callVar) {return node.callVar;}
+        else if (node.sensor) {return node.sensor;}
+        return;
     }
 
     visitGetTimestamp(node: GetTimestamp) {

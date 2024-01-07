@@ -1,16 +1,16 @@
 import { MonacoEditorLanguageClientWrapper, vscode } from "./monaco-editor-wrapper/index.js";
 import { buildWorkerDefinition } from "./monaco-editor-workers/index.js";
 import monarchSyntax from "./syntaxes/robot.monarch.js";
-
+import {sendCode, sendParseAndValidate} from '../web/websocket/websocket.js';
 
 buildWorkerDefinition('./monaco-editor-workers/workers', new URL('', window.location.href).href, false);
 
 MonacoEditorLanguageClientWrapper.addMonacoStyles('monaco-editor-styles');
 
 const wrapper = new MonacoEditorLanguageClientWrapper();
-
 const editorConfig = wrapper.getEditorConfig();
-editorConfig.setMainLanguageId('robot');       // WARNING Dependent of your project//
+editorConfig.setMainLanguageId('robot-language');
+
 editorConfig.setMonarchTokensProvider(monarchSyntax);
 
 let code = `def entry() {
@@ -67,39 +67,25 @@ const typecheck = (async () => {
 
 const parseAndValidate = (async () => {
     console.info('validating current code...');
-    const code = wrapper.editor.getValue();
-    const errors = await vscode.commands.executeCommand('parseAndValidate', code);
-
-    if(errors.length > 0){
-        const modal = document.getElementById("errorModal");
-        modal.style.display = "block";
-        errors.forEach((error) => {
-            const errorDiv = document.createElement("div");
-            errorDiv.innerHTML = error;
-            modal.getElementsByClassName("modal-body")[0].appendChild(errorDiv);
-        });
-    } else {
-        const modal = document.getElementById("validModal");
-        modal.style.display = "block";
-    }
-    
+    const codeToParse = wrapper.getEditor().getValue();
+    sendParseAndValidate(codeToParse);
 });
 
 const execute = (async () => {
     console.info('running current code...');
-    const codeToExecute = wrapper.getEditor().getValue();
-    const simulatorDiv = document.querySelector('.simulator');
-    // Execute custom LSP command, and receive the response
-    const scene = await vscode.commands.executeCommand('parseAndGenerate', [codeToExecute, simulatorDiv.clientWidth, simulatorDiv.clientHeight])
-    window.setupSimulator = setupSimulator(scene); 
+    
+    // get code to interpret
+    const code = wrapper.getEditor().getValue();
+    
+    sendCode(code);
+
 });
 
 const setupSimulator = (scene) => {
 
-    const simulatorDiv = document.querySelector('.simulator');
+    const wideSide = max(scene.size.x, scene.size.y);
+    let factor = 1000 / wideSide;
 
-    const wideSide = scene.size.y;//max(scene.size.x, scene.size.y);
-    let factor = simulatorDiv.clientWidth / wideSide;
 
     window.scene = scene;
 
@@ -132,6 +118,7 @@ const setupSimulator = (scene) => {
     );
 }
 
+window.setupSimulator = setupSimulator;
 window.execute = execute;
 window.typecheck = typecheck;
 window.parseAndValidate = parseAndValidate;
@@ -163,10 +150,10 @@ const lsWorker = new Worker(workerURL.href, {
     type: 'classic',
     name: 'Robot Server'
 });
-wrapper.setWorker(lsWorker);
+client.setWorker(lsWorker);
 
 // keep a reference to a promise for when the editor is finished starting, we'll use this to setup the canvas on load
-const startingPromise = wrapper.startEditor(document.getElementById("monaco-editor-root"));
+const startingPromise = client.startEditor(document.getElementById("monaco-editor-root"));
 
 
 

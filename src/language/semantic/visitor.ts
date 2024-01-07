@@ -10,7 +10,7 @@ export interface RobotVisitor {
     visitBackward(node: Backward): any;
     visitForward(node: Forward): any;
     visitLoop(node: Loop): any;
-    visitProgRobot(node: ProgRobot): any;
+    visitProgRobot(node: ASTInterfaces.ProgRobot): any;
     visitSpeedCommand(node: SpeedCommand): any;
     visitCallVariable(node: CallVariable): any;
     visitVariableDeclaration(node: VariableDeclaration): any;
@@ -563,13 +563,15 @@ export class Fonction implements ASTInterfaces.Fonction {
 export class ProgRobot implements ASTInterfaces.ProgRobot {
     $type: 'ProgRobot';
     functions: ASTInterfaces.Fonction[];
+    $container?: AstNode | undefined;
     
     constructor(functions: ASTInterfaces.Fonction[]) {
         this.functions = functions;
         this.$type = 'ProgRobot';
+        // this.$container = container;
     }
 
-    accept(visitor: RobotVisitor): any {
+    accept(visitor: RobotVisitor): any{
         return visitor.visitProgRobot(this);
     }
 }

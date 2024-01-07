@@ -1,9 +1,9 @@
 import type { DefaultSharedModuleContext, LangiumServices, LangiumSharedServices, Module, PartialLangiumServices } from 'langium';
-import { AbstractExecuteCommandHandler, createDefaultModule, createDefaultSharedModule, inject, ExecuteCommandAcceptor } from 'langium';
+import { /*AbstractExecuteCommandHandler,*/ createDefaultModule, createDefaultSharedModule, inject, /*ExecuteCommandAcceptor*/ } from 'langium';
 import { RobotGeneratedModule, RobotGeneratedSharedModule } from './generated/module.js';
 import { RobotValidator, registerValidationChecks } from './robot-validator.js';
 import { RobotAcceptWeaver, weaveAcceptMethods } from './semantic/accept-weaver.js';
-import { parseAndGenerate, parseAndValidate } from '../web/index.js';
+//import { parseAndGenerate, parseAndValidate } from '../web/index.js';
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -48,6 +48,7 @@ export const RobotModule: Module<RobotServices, PartialLangiumServices & RobotAd
  * @param context Optional module context with the LSP connection
  * @returns An object wrapping the shared services and the language-specific services
  */
+
 export function createRobotServices(context: DefaultSharedModuleContext): {
     shared: LangiumSharedServices,
     Robot: RobotServices,
@@ -61,13 +62,14 @@ export function createRobotServices(context: DefaultSharedModuleContext): {
         RobotGeneratedModule,
         RobotModule
     );
-    shared.lsp.ExecuteCommandHandler = new RobotCommandHandler();
+    //shared.lsp.ExecuteCommandHandler = new RobotCommandHandler();
     shared.ServiceRegistry.register(Robot);
     registerValidationChecks(Robot);
     weaveAcceptMethods(Robot);
     return { shared, Robot };
 }
 
+/*
 class RobotCommandHandler extends AbstractExecuteCommandHandler {
     registerCommands(acceptor: ExecuteCommandAcceptor): void {
         // accept a single command called 'parseAndGenerate'
@@ -82,3 +84,4 @@ class RobotCommandHandler extends AbstractExecuteCommandHandler {
         });
     }
 }
+*/
