@@ -62,7 +62,7 @@ export function createRobotServices(context: DefaultSharedModuleContext): {
         RobotGeneratedModule,
         RobotModule
     );
-    //shared.lsp.ExecuteCommandHandler = new RobotCommandHandler();
+    shared.lsp.ExecuteCommandHandler = new RobotCommandHandler();
     shared.ServiceRegistry.register(Robot);
     registerValidationChecks(Robot);
     weaveAcceptMethods(Robot);
