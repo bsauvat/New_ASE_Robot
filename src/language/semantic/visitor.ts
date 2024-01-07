@@ -714,6 +714,8 @@ export function acceptNode(node: AstNode, visitor: RobotVisitor): any {
             return (node as GetSpeed).accept(visitor);
         case 'GetTimestamp':
             return (node as GetTimestamp).accept(visitor);
+        case 'Or':
+            return (node as Or).accept(visitor);
         case 'And':
             return (node as And).accept(visitor);
         case 'Equality':
