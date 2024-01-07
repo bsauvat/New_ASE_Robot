@@ -1,5 +1,6 @@
 import * as ASTInterfaces from '../generated/ast.js';
 import { AstNode, Reference } from 'langium';
+import { Term } from '../generated/ast.js';
 
 export interface RobotVisitor {
     
@@ -41,7 +42,7 @@ export interface RobotVisitor {
 
     visitMultDiv(node: MultDiv): any;
 
-    //visitTerm(node: Term): any;
+    visitTerm(node: Term): any;
 
     visitAtomic(node: Atomic): any;
 
@@ -298,6 +299,22 @@ export class MultDiv implements ASTInterfaces.MultDiv {
     }
 }
 
+export class Term implements ASTInterfaces.Term {
+    $container: ASTInterfaces.MultDiv;
+    $type: 'Term';
+    value: ASTInterfaces.Atomic| ASTInterfaces.CallVariable | ASTInterfaces.CallFunction| ASTInterfaces.Expression;
+    
+
+    constructor(container: ASTInterfaces.MultDiv, expression: ASTInterfaces.Expression, value: ASTInterfaces.CallVariable | ASTInterfaces.CallFunction | ASTInterfaces.Atomic) {
+        this.value = value;
+        this.$type = 'Term';
+        this.$container = container;
+    }
+
+    accept(visitor: RobotVisitor): any {
+        return visitor.visitTerm(this);
+    }
+}
 
 export class Atomic implements ASTInterfaces.Atomic {
     $type: 'Atomic';
