@@ -76,7 +76,7 @@ MultDiv infers MultDiv:
 	left=Term ( op+=( '*' | '/' ) right+=Term)*;
 
 Term infers Term:
-	'(' Expression ')' | "not" expression=Term | param=DeclaredParameter | atom=Atomic;
+	'(' value = Expression ')' | "not" value=Term | value=DeclaredParameter | value=Atomic;
 
 Atomic infers Atomic:
 	{infer INT_const} value=INT |{infer INT_neg_const}'-' value=INT |

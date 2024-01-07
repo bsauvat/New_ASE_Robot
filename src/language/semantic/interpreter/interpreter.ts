@@ -2,8 +2,8 @@ import { wsServer } from "../../../web/app.js";
 import { Robot } from "../../../web/simulator/entities.js";
 import { BaseScene, Scene } from "../../../web/simulator/scene.js";
 import { Vector } from "../../../web/simulator/utils.js";
-import { Expression, MultDiv, StrafeRight, Unit } from "../../generated/ast.js";
-import { Body, Comparison, Condition, Term, BOOL_const, Fonction, CallFunction, GetDistance, GetSpeed, GetTimestamp, 
+import { Expression, MultDiv, StrafeRight, Term, Unit } from "../../generated/ast.js";
+import { Body, Comparison, Condition, BOOL_const, Fonction, CallFunction, GetDistance, GetSpeed, GetTimestamp, 
     Backward, Forward, Loop, ProgRobot, INT_const, Print, RobotVisitor, SpeedCommand, TurnLeft, TurnRight, CallVariable,
     VariableDeclaration, UpdateVariable, acceptNode, And,Or, Equality, PlusMinus,INT_neg_const, DeclaredParameter, StrafeLeft, Return, STRING_const, Atomic } from "../visitor.js";
 
@@ -157,11 +157,16 @@ export class InterpreterVisitor implements RobotVisitor{
     }
 
     visitAnd(node: And) {
+
         for (let right in node.right){
             return acceptNode(node.left, this) && acceptNode((right as unknown as Equality), this);}
     }
 
     visitEquality(node: Equality) {
+
+        if (node.op.length == 0){
+            return acceptNode(node.left, this);
+        }
 
         for (let i = 0; i < node.op.length; i++){
             switch(node.op[i]){
@@ -178,6 +183,10 @@ export class InterpreterVisitor implements RobotVisitor{
         
     
     visitComparison(node: Comparison) {
+
+        if (node.op.length == 0){
+            return acceptNode(node.left, this);
+        }
 
         for (let i = 0; i < node.op.length; i++){
             switch(node.op[i]){
@@ -197,9 +206,11 @@ export class InterpreterVisitor implements RobotVisitor{
     }
 
     visitPlusMinus(node: PlusMinus) {
-        console.log("op : ",node.op);
-        console.log("length", node.op.length);
-        if (node.op.length ===0) {return acceptNode(node.left, this);}
+
+        if (node.op.length == 0){
+            return acceptNode(node.left, this);
+        }
+
         for (let i = 0; i < node.op.length; i++){
             console.log("op : ",node.op[i]);
             switch(node.op[i]){
@@ -215,6 +226,8 @@ export class InterpreterVisitor implements RobotVisitor{
     }
 
     visitMultDiv(node: MultDiv) {
+
+        if (node.op.length === 0) return acceptNode(node.left, this);
 
         for (let i = 0; i < node.op.length; i++){
             switch(node.op[i]){
@@ -249,6 +262,14 @@ export class InterpreterVisitor implements RobotVisitor{
             return dist;
         }
         return 100000;
+    }
+
+    visitTerm(node: Expression | Term | Atomic | DeclaredParameter) {
+        
+    }
+
+    visitTerm(node: Expression | Term | Atomic | DeclaredParameter) {
+        
     }
 
     visitTerm(node: Term) {
