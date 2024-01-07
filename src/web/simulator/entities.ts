@@ -12,6 +12,7 @@ export interface Entities {
 export class Robot implements Entities{
     
     type:string = "Robot";
+    //scene:Scene;
     pos:Vector;
     scene:Scene;
     size:Vector;

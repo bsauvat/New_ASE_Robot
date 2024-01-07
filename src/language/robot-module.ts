@@ -48,6 +48,7 @@ export const RobotModule: Module<RobotServices, PartialLangiumServices & RobotAd
  * @param context Optional module context with the LSP connection
  * @returns An object wrapping the shared services and the language-specific services
  */
+
 export function createRobotServices(context: DefaultSharedModuleContext): {
     shared: LangiumSharedServices,
     Robot: RobotServices,
@@ -61,7 +62,7 @@ export function createRobotServices(context: DefaultSharedModuleContext): {
         RobotGeneratedModule,
         RobotModule
     );
-    shared.lsp.ExecuteCommandHandler = new RobotCommandHandler();
+    //shared.lsp.ExecuteCommandHandler = new RobotCommandHandler();
     shared.ServiceRegistry.register(Robot);
     registerValidationChecks(Robot);
     weaveAcceptMethods(Robot);
@@ -82,3 +83,4 @@ class RobotCommandHandler extends AbstractExecuteCommandHandler {
         });
     }
 }
+
