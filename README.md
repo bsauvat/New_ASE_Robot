@@ -41,8 +41,8 @@ http://localhost:3000/
 ## 💻 Interpreter (major part)
 
 We tried 2 possibilities to develop our interpreter :
-- **classic method following langium web tutorial (in master branch)**
-- **web sockets method (in dev branch)**
+- **classic method following langium web tutorial (in Master branch)**
+- **web sockets method (in Websockets branch)**
 
 We encountered **errors for both solutions** that we did not arrive to resolve that are the following ones :
 
@@ -75,5 +75,24 @@ We get different errors :
 In fact, the setup.js isn't recognized in the websources files :
 <img src="./assets/msg_error_webconsole.png">
 <img src="./assets/monaco_configuration.png">
+
 Whereas we include this file in the Monaco configuration like all the other files as you can see just above.
+
+## 💻 Compiler (minor part)
+
+Place yourself in robot folder, compiler can be tested with the command :
+```bash
+node ./bin/cli compile ./examples/test.robot
+```
+
+Compiler is located in **Compiler branch** in **src>language>semantic>compiler** folder
+
+The librairies have been imported and the RobotVisitor implementation has been developed in compiler.ts file.
+
+Unfortunetaly, we face an error that we did not manage to resolve which is :
+
+<img src="./assets/compilererror.png">
+
+We checked our files, and all the links are functional between the functions, the imports, and the files, but we did not solve this error.
+
 
