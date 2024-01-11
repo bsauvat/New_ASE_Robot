@@ -2,10 +2,8 @@ import { wsServer } from "../../../web/app.js";
 import { Robot } from "../../../web/simulator/entities.js";
 import { BaseScene, Scene } from "../../../web/simulator/scene.js";
 import { Vector } from "../../../web/simulator/utils.js";
-import { Expression, MultDiv, StrafeRight, Term, Unit } from "../../generated/ast.js";
-import { Body, Comparison, Condition, BOOL_const, Fonction, CallFunction, GetDistance, GetSpeed, GetTimestamp, 
-    Backward, Forward, Loop, ProgRobot, INT_const, Print, RobotVisitor, SpeedCommand, TurnLeft, TurnRight, CallVariable,
-    VariableDeclaration, UpdateVariable, acceptNode, And,Or, Equality, PlusMinus,INT_neg_const, DeclaredParameter, StrafeLeft, Return, STRING_const, Atomic } from "../visitor.js";
+import { Expression, Unit } from "../../generated/ast.js";
+import { BinaryArithmeticExpression, BinaryBooleanExpression, Body, Condition, BOOL_const, Fonction, CallFunction, GetDistance, GetSpeed, GetTimestamp, Backward, Forward, TurnLeft, TurnRight, StrafeLeft, StrafeRight, SpeedCommand, Loop, ProgRobot, RobotVisitor, Print,  CallVariable, VariableDeclaration, UpdateVariable, acceptNode,INT_neg_const, INT_const, STRING_const, Return} from "../visitor.js";
 
 export class InterpreterVisitor implements RobotVisitor{
 
@@ -14,17 +12,13 @@ export class InterpreterVisitor implements RobotVisitor{
     private variables: Map<string,Expression>;
     public wait: boolean;
 
-    constructor(sceneWidth?: number, sceneHeight?:number) {
-        if(sceneWidth && sceneHeight) {
-            this.scene = new BaseScene(new Vector(sceneWidth*10, sceneHeight*10));
-            this.robot = this.scene.robot;
-        }
-        else {
-            this.scene = new BaseScene();
-            this.robot = this.scene.robot;
-        }
+    constructor() {
+       
+        this.scene = new BaseScene();
+        this.robot = this.scene.robot;
         this.variables = new Map<string, Expression>();
         this.wait = false;
+
         this.sendSceneToClient(this.scene);
     }
 
@@ -129,9 +123,9 @@ export class InterpreterVisitor implements RobotVisitor{
         this.sendRobotToClient({dist: 0, strafe: strafe, angle: 0})
     }
 
-    visitDeclaredParameter(node: DeclaredParameter) {
-        return node.name;
-    }
+    // visitDeclaredParameter(node: DeclaredParameter) {
+    //     return node.name;
+    // }
 
     visitCallVariable(node: CallVariable) {
         if (!node.varName.ref) {
@@ -151,95 +145,140 @@ export class InterpreterVisitor implements RobotVisitor{
         this.variables.set(node.varName.ref?.name, acceptNode(node.newValue, this))
     }
     
-    visitOr(node: Or) {
-        for (let right in node.right){
-            return acceptNode(node.left, this) || acceptNode((right as unknown as And), this);}
-    }
+    // visitOr(node: Or) {
+    //     for (let right in node.right){
+    //         return acceptNode(node.left, this) || acceptNode((right as unknown as And), this);}
+    // }
 
-    visitAnd(node: And) {
+    // visitAnd(node: And) {
 
-        for (let right in node.right){
-            return acceptNode(node.left, this) && acceptNode((right as unknown as Equality), this);}
-    }
+    //     for (let right in node.right){
+    //         return acceptNode(node.left, this) && acceptNode((right as unknown as Equality), this);}
+    // }
 
-    visitEquality(node: Equality) {
+    // visitEquality(node: Equality) {
 
-        if (node.op.length == 0){
-            return acceptNode(node.left, this);
-        }
+    //     if (node.op.length == 0){
+    //         return acceptNode(node.left, this);
+    //     }
 
-        for (let i = 0; i < node.op.length; i++){
-            switch(node.op[i]){
-                case '==':
-                    return acceptNode(node.left, this) == acceptNode((node.right[i]), this);
-                case '!=':
-                    return acceptNode(node.left, this) != acceptNode((node.right[i]), this);
-                default:
-                    throw new Error("Equality operator not implemented");
-            }
-        }
-        throw new Error("Equality visit failed");     
-    }
+    //     for (let i = 0; i < node.op.length; i++){
+    //         switch(node.op[i]){
+    //             case '==':
+    //                 return acceptNode(node.left, this) == acceptNode((node.right[i]), this);
+    //             case '!=':
+    //                 return acceptNode(node.left, this) != acceptNode((node.right[i]), this);
+    //             default:
+    //                 throw new Error("Equality operator not implemented");
+    //         }
+    //     }
+    //     throw new Error("Equality visit failed");     
+    // }
         
     
-    visitComparison(node: Comparison) {
+    // visitComparison(node: Comparison) {
 
-        if (node.op.length == 0){
-            return acceptNode(node.left, this);
-        }
+    //     if (node.op.length == 0){
+    //         return acceptNode(node.left, this);
+    //     }
 
-        for (let i = 0; i < node.op.length; i++){
-            switch(node.op[i]){
-                case '<':
-                    return acceptNode(node.left, this) < acceptNode((node.right[i]), this);
-                case '>':
-                    return acceptNode(node.left, this) > acceptNode((node.right[i]), this);
-                case '<=':
-                    return acceptNode(node.left, this) <= acceptNode((node.right[i]), this);
-                case '>=':
-                    return acceptNode(node.left, this) >= acceptNode((node.right[i]), this);
-                default:
-                    throw new Error("Comparison operator not implemented");
-            }
+    //     for (let i = 0; i < node.op.length; i++){
+    //         switch(node.op[i]){
+    //             case '<':
+    //                 return acceptNode(node.left, this) < acceptNode((node.right[i]), this);
+    //             case '>':
+    //                 return acceptNode(node.left, this) > acceptNode((node.right[i]), this);
+    //             case '<=':
+    //                 return acceptNode(node.left, this) <= acceptNode((node.right[i]), this);
+    //             case '>=':
+    //                 return acceptNode(node.left, this) >= acceptNode((node.right[i]), this);
+    //             default:
+    //                 throw new Error("Comparison operator not implemented");
+    //         }
+    //     }
+    //     throw new Error("Comparison visit failed");     
+    // }
+
+    // visitPlusMinus(node: PlusMinus) {
+
+    //     if (node.op.length == 0){
+    //         return acceptNode(node.left, this);
+    //     }
+
+    //     for (let i = 0; i < node.op.length; i++){
+    //         console.log("op : ",node.op[i]);
+    //         switch(node.op[i]){
+    //             case '+':
+    //                 return acceptNode(node.left, this) + acceptNode((node.right[i]), this);
+    //             case '-':
+    //                 return acceptNode(node.left, this) - acceptNode((node.right[i]), this);
+    //             default:
+    //                 throw new Error("PlusMinus operator not implemented");
+    //         }
+    //     }
+    //     throw new Error("PlusMinus visit failed");     
+    // }
+
+    // visitMultDiv(node: MultDiv) {
+
+    //     if (node.op.length === 0) return acceptNode(node.left, this);
+
+    //     for (let i = 0; i < node.op.length; i++){
+    //         switch(node.op[i]){
+    //             case '*':
+    //                 return acceptNode(node.left, this) * acceptNode((node.right[i]), this);
+    //             case '/':
+    //                 return acceptNode(node.left, this) / acceptNode((node.right[i]), this);
+    //             default:
+    //                 throw new Error("MultDiv operator not implemented");
+    //         }
+    //     }
+    //     throw new Error("MultDiv visit failed");
+    // }
+
+    // visitTerm(node: Term) {
+    //    if(node.term) {return acceptNode(node.term, this);}
+    //    else if(node.param) {return acceptNode(node.param,this);}
+    //    else if(node.expression) {return acceptNode(node.expression,this);}
+    //    else if(node.atom) {return acceptNode(node.atom, this);}
+    //    else throw new Error("Term visit failed");
+    // }
+
+    // visitAtomic(node: Atomic) {
+    //     return node.value;
+    // }
+
+    visitBinaryArithmeticExpression(node: BinaryArithmeticExpression) {
+        switch (node.op) {
+            case '+':
+                return acceptNode(node.left, this) + acceptNode(node.right, this);
+            case '-':
+                return acceptNode(node.left, this) - acceptNode(node.right, this);
+            case '*':
+                return acceptNode(node.left, this) * acceptNode(node.right, this);
+            case '/':
+                return acceptNode(node.left, this) / acceptNode(node.right, this);
+            default:
+                throw new Error("arithmetic operator not implemented");
         }
-        throw new Error("Comparison visit failed");     
     }
-
-    visitPlusMinus(node: PlusMinus) {
-
-        if (node.op.length == 0){
-            return acceptNode(node.left, this);
+    visitBinaryBooleanExpression(node: BinaryBooleanExpression) {
+        switch (node.op) {
+            case '&&':
+                return acceptNode(node.left, this) && acceptNode(node.right, this);
+            case '||':
+                return acceptNode(node.left, this) || acceptNode(node.right, this);
+            case '<':
+                return acceptNode(node.left, this) < acceptNode(node.right, this);
+            case '>':
+                return acceptNode(node.left, this) > acceptNode(node.right, this);
+            case '<=':
+                return acceptNode(node.left, this) <= acceptNode(node.right, this);
+            case '>=':
+                return acceptNode(node.left, this) >= acceptNode(node.right, this);
+            default:
+                throw new Error("binary operator not implemented");
         }
-
-        for (let i = 0; i < node.op.length; i++){
-            console.log("op : ",node.op[i]);
-            switch(node.op[i]){
-                case '+':
-                    return acceptNode(node.left, this) + acceptNode((node.right[i]), this);
-                case '-':
-                    return acceptNode(node.left, this) - acceptNode((node.right[i]), this);
-                default:
-                    throw new Error("PlusMinus operator not implemented");
-            }
-        }
-        throw new Error("PlusMinus visit failed");     
-    }
-
-    visitMultDiv(node: MultDiv) {
-
-        if (node.op.length === 0) return acceptNode(node.left, this);
-
-        for (let i = 0; i < node.op.length; i++){
-            switch(node.op[i]){
-                case '*':
-                    return acceptNode(node.left, this) * acceptNode((node.right[i]), this);
-                case '/':
-                    return acceptNode(node.left, this) / acceptNode((node.right[i]), this);
-                default:
-                    throw new Error("MultDiv operator not implemented");
-            }
-        }
-        throw new Error("MultDiv visit failed");
     }
 
     visitPrint(node: Print) {
@@ -262,21 +301,6 @@ export class InterpreterVisitor implements RobotVisitor{
             return dist;
         }
         return 100000;
-    }
-
-    visitTerm(node: Expression | Term | Atomic | DeclaredParameter) {
-        
-    }
-
-    visitTerm(node: Expression | Term | Atomic | DeclaredParameter) {
-        
-    }
-
-    visitTerm(node: Term) {
-        return;
-    }
-    visitAtomic(node: Atomic) {
-        return node.value;
     }
 
     visitGetTimestamp(node: GetTimestamp) {

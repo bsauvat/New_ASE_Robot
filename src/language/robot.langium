@@ -33,7 +33,7 @@ Condition:
 	'if' ifCondition=Expression ifBody=Body ('else' 'if' elseifCondition+=Expression elseifBody+=Body)* ('else' elseBody=Body)? ;
 
 DeclaredParameter:
-    vartype=("int" | "string" | "bool") name=ID;
+    vartype=("int" | "string" | "bool") varame=[AbstractType:ID];
 
 VariableDeclaration:
 	vartype=("int" | "string" | "bool") name=ID '=' varValue=Expression;
@@ -57,34 +57,35 @@ Unit returns string:
 
 Expression : Or;
 
-Or infers Or:
-	left=And ( '||' right+=And )*;
+Or infers Expression:
+	And ({infer BinaryBooleanExpression.left=current} op='||' right=And )*;
 
-And infers And:
-	left=Equality ( '&&' right+=Equality )*;
+And infers Expression:
+	Equality ({infer BinaryBooleanExpression.left=current} op='&&' right=Equality )*;
 
-Equality infers Equality:
-	left=Comparison (op+=( '==' | '!=' ) right+=Comparison)*;
+Equality infers Expression:
+	Comparison ({infer BinaryBooleanExpression.left=current} op=( '==' | '!=' ) right=Comparison)*;
 
-Comparison infers Comparison:
-	left=PlusMinus (op+=( '<' | '<=' | '>=' | '>' ) right+=PlusMinus )*;
+Comparison infers Expression:
+	PlusMinus ({infer BinaryBooleanExpression.left=current} op=( '<' | '<=' | '>=' | '>' ) right=PlusMinus )*;
 
-PlusMinus infers PlusMinus:
-	left=MultDiv (op+=( '+' | '-' ) right+=MultDiv )*;
+PlusMinus infers Expression:
+	MultDiv ({infer BinaryArithmeticExpression.left=current} op=( '+' | '-' ) right+=MultDiv )*;
 
-MultDiv infers MultDiv:
-	left=Term ( op+=( '*' | '/' ) right+=Term)*;
+MultDiv infers Expression:
+	Term ({infer BinaryArithmeticExpression.left=current} op=( '*' | '/' ) right+=Term)*;
 
-Term infers Term:
-	'(' value = Expression ')' | "not" value=Term | value=DeclaredParameter | value=Atomic;
+Term infers Expression:
+	'(' term = Expression ')'  | atom=Atomic;
 
-Atomic infers Atomic:
+Atomic infers Expression:
 	{infer INT_const} value=INT |{infer INT_neg_const}'-' value=INT |
 	{infer STRING_const} value=STRING |
 	{infer BOOL_const} value=('true' | 'false') |
 	callVar=CallVariable |
 	callFunction=CallFunction |
-	sensor=GetSensor;
+	sensor=GetSensor | 
+	param=DeclaredParameter;
 
 GetSensor:
     {infer GetTimestamp} "get_timestamp()" | {infer GetDistance} "get_distance()" | {infer GetSpeed} "get_speed()";
@@ -102,10 +103,10 @@ StrafeRight:
     'straferight' distance=ArithmeticExpression unit=Unit;
 
 TurnRight:
-    'turnright'angle=ArithmeticExpression;
+    'turnright' angle=ArithmeticExpression;
 
 TurnLeft:
-    'turnleft'angle=ArithmeticExpression;
+    'turnleft' angle=ArithmeticExpression;
 
 SpeedCommand:
 	'setspeed' speed=ArithmeticExpression;

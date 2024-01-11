@@ -37,7 +37,7 @@ export class WebSocketReceiver {
         switch (message.type) {
             case "code":
                 codeReceived = message.text;
-                console.log(codeReceived);
+                //console.log(codeReceived);
                 const model: ProgRobot = await createAstFromString<ProgRobot>(codeReceived);
                 interpret(model);
                 break;

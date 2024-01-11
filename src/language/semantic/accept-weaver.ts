@@ -27,9 +27,9 @@ export class RobotAcceptWeaver {
     weaveBody(node: InterfaceAST.Body, accept: ValidationAcceptor): void {
         (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitBody(node as unknown as ClassAST.Body)};
     }
-    weaveDeclaredParameter(node: InterfaceAST.DeclaredParameter, accept: ValidationAcceptor): void {
-        (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitDeclaredParameter(node as unknown as ClassAST.DeclaredParameter)};
-    }
+    // weaveDeclaredParameter(node: InterfaceAST.DeclaredParameter, accept: ValidationAcceptor): void {
+    //     (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitDeclaredParameter(node as unknown as ClassAST.DeclaredParameter)};
+    // }
     weaveReturn(node: InterfaceAST.Return, accept: ValidationAcceptor): void {
         (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitReturn(node as unknown as ClassAST.Return)};
     }
@@ -54,26 +54,32 @@ export class RobotAcceptWeaver {
     weaveCallFunction(node: InterfaceAST.CallFunction, accept: ValidationAcceptor): void {
         (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitCallFunction(node as unknown as ClassAST.CallFunction)};
     }
-    weaveOr(node: InterfaceAST.Or, accept: ValidationAcceptor): void {
-        (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitOr(node as unknown as ClassAST.Or)};
+    // weaveOr(node: InterfaceAST.Or, accept: ValidationAcceptor): void {
+    //     (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitOr(node as unknown as ClassAST.Or)};
+    // }
+    // weaveAnd(node: InterfaceAST.And, accept: ValidationAcceptor): void {
+    //     (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitAnd(node as unknown as ClassAST.And)};
+    // }
+    // weaveEquality(node: InterfaceAST.Equality, accept: ValidationAcceptor): void {
+    //     (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitEquality(node as unknown as ClassAST.Equality)};
+    // }
+    // weaveComparison(node: InterfaceAST.Comparison, accept: ValidationAcceptor): void {
+    //     (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitComparison(node as unknown as ClassAST.Comparison)};
+    // }
+    // weavePlusMinus(node: InterfaceAST.PlusMinus, accept: ValidationAcceptor): void {
+    //     (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitPlusMinus(node as unknown as ClassAST.PlusMinus)};
+    // }
+    // weaveMultDiv(node: InterfaceAST.MultDiv, accept: ValidationAcceptor): void {
+    //     (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitMultDiv(node as unknown as ClassAST.MultDiv)};
+    // }
+    // weaveAtomic(node: InterfaceAST.Atomic, accept: ValidationAcceptor): void {
+    //     (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitAtomic(node as unknown as ClassAST.Atomic)};
+    // }
+    weaveBinaryArithmeticExpression(node: InterfaceAST.BinaryArithmeticExpression, accept: ValidationAcceptor) : void {
+        (<any> node).accept = (visitor: RobotVisitor) => {return visitor.visitBinaryArithmeticExpression(node as unknown as ClassAST.BinaryArithmeticExpression);}
     }
-    weaveAnd(node: InterfaceAST.And, accept: ValidationAcceptor): void {
-        (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitAnd(node as unknown as ClassAST.And)};
-    }
-    weaveEquality(node: InterfaceAST.Equality, accept: ValidationAcceptor): void {
-        (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitEquality(node as unknown as ClassAST.Equality)};
-    }
-    weaveComparison(node: InterfaceAST.Comparison, accept: ValidationAcceptor): void {
-        (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitComparison(node as unknown as ClassAST.Comparison)};
-    }
-    weavePlusMinus(node: InterfaceAST.PlusMinus, accept: ValidationAcceptor): void {
-        (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitPlusMinus(node as unknown as ClassAST.PlusMinus)};
-    }
-    weaveMultDiv(node: InterfaceAST.MultDiv, accept: ValidationAcceptor): void {
-        (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitMultDiv(node as unknown as ClassAST.MultDiv)};
-    }
-    weaveAtomic(node: InterfaceAST.Atomic, accept: ValidationAcceptor): void {
-        (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitAtomic(node as unknown as ClassAST.Atomic)};
+    weaveBinaryBooleanExpression(node: InterfaceAST.BinaryBooleanExpression, accept: ValidationAcceptor) : void {
+        (<any> node).accept = (visitor: RobotVisitor) => {return visitor.visitBinaryBooleanExpression(node as unknown as ClassAST.BinaryBooleanExpression);}
     }
     weaveForward(node: InterfaceAST.Forward, accept: ValidationAcceptor): void {
         (<any>node).accept = (visitor: RobotVisitor) => {return visitor.visitForward(node as unknown as ClassAST.Forward)};
@@ -100,7 +106,7 @@ export class RobotAcceptWeaver {
     checks: ValidationChecks<RobotAstType> = {
         Body: this.weaveBody,
         Fonction: this.weaveFonction,
-        DeclaredParameter: this.weaveDeclaredParameter,
+        //DeclaredParameter: this.weaveDeclaredParameter,
         Return: this.weaveReturn,
         Print: this.weavePrint,
         Loop: this.weaveLoop,
@@ -109,13 +115,13 @@ export class RobotAcceptWeaver {
         UpdateVariable: this.weaveUpdateVariable,
         CallVariable: this.weaveCallVariable,
         CallFunction: this.weaveCallFunction,
-        Or: this.weaveOr,
-        And: this.weaveAnd,
-        Equality: this.weaveEquality,
-        Comparison: this.weaveComparison,
-        PlusMinus: this.weavePlusMinus,
-        MultDiv: this.weaveMultDiv,
-        Atomic: this.weaveAtomic,
+        // Or: this.weaveOr,
+        // And: this.weaveAnd,
+        // Equality: this.weaveEquality,
+        // Comparison: this.weaveComparison,
+        // PlusMinus: this.weavePlusMinus,
+        // MultDiv: this.weaveMultDiv,
+        // Atomic: this.weaveAtomic,
         Forward: this.weaveForward,
         Backward: this.weaveBackward,
         StrafeLeft: this.weaveStrafeLeft,
