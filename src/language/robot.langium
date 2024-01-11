@@ -76,16 +76,16 @@ MultDiv infers Expression:
 	Term ({infer BinaryArithmeticExpression.left=current} op=( '*' | '/' ) right+=Term)*;
 
 Term infers Expression:
-	'(' term = Expression ')'  | atom=Atomic;
+	'(' Expression ')'  | Atomic;
 
 Atomic infers Expression:
 	{infer INT_const} value=INT |{infer INT_neg_const}'-' value=INT |
 	{infer STRING_const} value=STRING |
 	{infer BOOL_const} value=('true' | 'false') |
-	callVar=CallVariable |
-	callFunction=CallFunction |
-	sensor=GetSensor | 
-	param=DeclaredParameter;
+	CallVariable |
+	CallFunction |
+	GetSensor | 
+	DeclaredParameter;
 
 GetSensor:
     {infer GetTimestamp} "get_timestamp()" | {infer GetDistance} "get_distance()" | {infer GetSpeed} "get_speed()";

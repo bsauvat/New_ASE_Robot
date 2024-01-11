@@ -312,7 +312,7 @@ export class InterpreterVisitor implements RobotVisitor{
     }
 
     visitINT_neg_const(node: INT_neg_const) {
-        return node.value;
+        return -node.value;
     }
 
     visitBOOL_const(node: BOOL_const) {

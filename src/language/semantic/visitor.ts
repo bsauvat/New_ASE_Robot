@@ -588,10 +588,12 @@ export class Return implements ASTInterfaces.Return {
 }
 
 export class BOOL_const implements ASTInterfaces.BOOL_const {
+    $container: any;
     $type: 'BOOL_const';
     value: "true" | "false";
 
-    constructor(value: "true" | "false") {
+    constructor(container: any, value: "true" | "false") {
+        this.$container = container;
         this.value = value;
         this.$type = 'BOOL_const';
     }
@@ -701,10 +703,12 @@ export class ProgRobot implements ASTInterfaces.ProgRobot {
 // }
 
 export class INT_const implements ASTInterfaces.INT_const {
+    $container: any;
     $type: 'INT_const';
     value: number;
 
-    constructor(value: number) {
+    constructor(container: any, value: number) {
+        this.$container = container;
         this.value = value;
         this.$type = 'INT_const';
     }
@@ -715,10 +719,12 @@ export class INT_const implements ASTInterfaces.INT_const {
 }
 
 export class INT_neg_const implements ASTInterfaces.INT_neg_const {
+    $container: any;
     $type: 'INT_neg_const';
     value: number;
 
-    constructor(value: number) {
+    constructor(value: number, container: any ) {
+        this.$container = container;
         this.value = value;
         this.$type = 'INT_neg_const';
     }
@@ -729,10 +735,12 @@ export class INT_neg_const implements ASTInterfaces.INT_neg_const {
 }
 
 export class STRING_const implements ASTInterfaces.STRING_const {
+    $container: any;
     $type: 'STRING_const';
     value: string;
 
-    constructor(value: string) {
+    constructor(value: string, container: any) {
+        this.$container = container;
         this.value = value;
         this.$type = 'STRING_const';
     }
