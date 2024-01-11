@@ -4,11 +4,23 @@ import { Command } from 'commander';
 import { RobotLanguageMetaData } from '../language/generated/module.js';
 import { createRobotServices } from '../language/robot-module.js';
 import { extractAstNode } from './cli-util.js';
-import { generateJavaScript, writeAst } from './generator.js';
+import { generateJavaScript, writeAst, generateArduinoCode } from './generator.js';
 import { NodeFileSystem } from 'langium/node';
 import { interpret } from '../language/semantic/interpret.js';
 import { createDocumentFromString } from '../web/websocket/utils.js';
 import { wsServer } from '../web/app.js';
+
+export const compile = async (fileName: string): Promise<void> => {
+    const services = createRobotServices(NodeFileSystem).Robot;
+    const model = await extractAstNode<ProgRobot>(fileName, services);
+
+    // Generate the Arduino code using the visitor
+    const arduinoCode = generateArduinoCode(model);
+
+    // Output the generated Arduino code
+    console.log(arduinoCode);
+};
+
 
 export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
     const services = createRobotServices(NodeFileSystem).Robot;
@@ -72,6 +84,13 @@ export default function(): void {
         .argument('<file>', `Source file ending in ${fileExtensions}`)
         .description('Command to generate the AST of a source file')
         .action(visitFile)
+
+    program
+        .command('compile') 
+        .argument('<file>', `Source file to compile (ending in ${fileExtensions})`) 
+        .description('Compiles the source file to Arduino code')
+        .action(compile);
+
 
     program.parse(process.argv);
 }
